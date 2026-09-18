@@ -10,6 +10,7 @@ import {
   batchSaveAttendance,
 } from './actions';
 import { AttendanceStatus } from '@/types';
+import BackfillCalendarPicker from '@/components/BackfillCalendarPicker';
 import {
   Check,
   Clock,
@@ -134,16 +135,26 @@ export default function AttendanceClient({ courses, activeInstructor }: Attendan
     }
   };
 
-  const handleCreateOrOpenBackfill = async () => {
+  const existingSessionDates = sessions.map((s: any) => {
+    const d = new Date(s.date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
+
+  const handleCreateOrOpenBackfill = async (targetDateStr?: string) => {
+    const dateToUse = targetDateStr || backfillDate;
     setIsSaving(true);
     setErrorMessage(null);
     try {
       const session = await createOrGetAttendanceSession(
         selectedCourse.id,
-        new Date(backfillDate).toISOString(),
-        `Session for ${new Date(backfillDate).toLocaleDateString()}`
+        new Date(dateToUse + 'T12:00:00Z').toISOString(),
+        `Session for ${new Date(dateToUse + 'T12:00:00Z').toLocaleDateString()}`
       );
       setSelectedSessionId(session.id);
+      setBackfillDate(dateToUse);
       setLocalRecords({});
       router.refresh();
     } catch (err: any) {
@@ -210,27 +221,19 @@ export default function AttendanceClient({ courses, activeInstructor }: Attendan
         </div>
       </div>
 
-      {/* Backfill & Session Creator Bar */}
+      {/* Backfill Calendar Picker & Quick Actions Bar */}
       <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-sm text-slate-300">
-          <Calendar className="w-4 h-4 text-indigo-400 shrink-0" />
-          <span className="font-semibold text-xs uppercase tracking-wider text-slate-400">Back-fill or Date Picker:</span>
-          <input
-            type="date"
-            value={backfillDate}
-            min={minDate}
-            max={todayIso}
-            onChange={(e) => setBackfillDate(e.target.value)}
-            className="bg-slate-950 border border-slate-700 text-white text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-indigo-500"
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <span className="font-semibold text-xs uppercase tracking-wider text-slate-400 shrink-0">
+            Back-fill Calendar:
+          </span>
+          <BackfillCalendarPicker
+            selectedDate={backfillDate}
+            onSelectDate={(dateYmd) => setBackfillDate(dateYmd)}
+            onOpenSession={(dateYmd) => handleCreateOrOpenBackfill(dateYmd)}
+            existingSessionDates={existingSessionDates}
+            isSubmitting={isSaving}
           />
-          <button
-            type="button"
-            onClick={handleCreateOrOpenBackfill}
-            disabled={isSaving}
-            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1 shadow-sm disabled:opacity-50"
-          >
-            <Plus className="w-3.5 h-3.5" /> Open / Create Date
-          </button>
         </div>
 
         {activeSession && !isSessionLocked && (
