@@ -1,14 +1,26 @@
 'use client';
 
 import { useState } from 'react';
-import { saveStudentStrategy } from '../actions';
+import { useRouter } from 'next/navigation';
+import { saveStudentStrategy, toggleStudentRemoval } from '../actions';
 import Link from 'next/link';
-import { ArrowLeft, Save, CheckCircle2, AlertCircle, Clock, FileText } from 'lucide-react';
+import {
+  ArrowLeft,
+  Save,
+  CheckCircle2,
+  AlertCircle,
+  FileText,
+  UserX,
+  RotateCcw,
+  ShieldAlert,
+} from 'lucide-react';
 
 export default function StudentDetailClient({ student }: { student: any }) {
+  const router = useRouter();
   const [strategyNotes, setStrategyNotes] = useState(student.strategies[0]?.strategyNotes || '');
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isPendingRemoval, setIsPendingRemoval] = useState(false);
 
   const handleSaveStrategy = async () => {
     setIsSaving(true);
@@ -16,6 +28,18 @@ export default function StudentDetailClient({ student }: { student: any }) {
     setIsSaving(false);
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 3000);
+  };
+
+  const handleToggleRemoval = async () => {
+    const nextRemoved = !student.isRemoved;
+    if (nextRemoved && !confirm(`Remove ${student.name} from the active cohort? Historic records will remain preserved.`)) {
+      return;
+    }
+
+    setIsPendingRemoval(true);
+    await toggleStudentRemoval(student.id, nextRemoved);
+    setIsPendingRemoval(false);
+    router.refresh();
   };
 
   return (
@@ -30,13 +54,60 @@ export default function StudentDetailClient({ student }: { student: any }) {
         </Link>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">{student.name}</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-bold text-white tracking-tight">{student.name}</h2>
+              {student.isRemoved ? (
+                <span className="text-xs bg-rose-950 text-rose-300 px-2.5 py-0.5 rounded-full border border-rose-800/60 font-semibold">
+                  Archived / Removed
+                </span>
+              ) : (
+                <span className="text-xs bg-emerald-950 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-800/60 font-semibold">
+                  Active Enrolled
+                </span>
+              )}
+            </div>
             <p className="text-sm text-slate-400 mt-1">
-              {student.email} — Enrolled in <span className="text-indigo-400 font-semibold">{student.course.code}: {student.course.name}</span>
+              {student.email || 'No institutional email'} — Enrolled in{' '}
+              <span className="text-indigo-400 font-semibold">
+                {student.course.code}: {student.course.name}
+              </span>
             </p>
+          </div>
+
+          <div>
+            <button
+              type="button"
+              disabled={isPendingRemoval}
+              onClick={handleToggleRemoval}
+              className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition flex items-center gap-1.5 ${
+                student.isRemoved
+                  ? 'bg-emerald-950/80 border-emerald-800 text-emerald-300 hover:bg-emerald-900'
+                  : 'bg-slate-800 hover:bg-rose-950/60 text-slate-300 hover:text-rose-300 border-slate-700 hover:border-rose-800'
+              }`}
+            >
+              {student.isRemoved ? (
+                <>
+                  <RotateCcw className="w-4 h-4" /> Restore to Active Cohort
+                </>
+              ) : (
+                <>
+                  <UserX className="w-4 h-4" /> Remove from Cohort
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>
+
+      {student.isRemoved && (
+        <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-800/50 text-rose-300 text-xs flex items-center gap-2">
+          <ShieldAlert className="w-4 h-4 shrink-0 text-rose-400" />
+          <span>
+            This student has been soft-deleted from active cohort analytics. Their historical attendance and homework
+            records remain stored safely in the database and will be restored immediately if reactivated.
+          </span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Intervention Strategy Log */}
@@ -88,62 +159,70 @@ export default function StudentDetailClient({ student }: { student: any }) {
             </h3>
 
             <div className="divide-y divide-slate-800/60">
-              {student.attendanceRecords.map((record: any) => (
-                <div key={record.id} className="py-2.5 flex items-center justify-between text-xs">
-                  <span className="text-slate-300">
-                    Session Date: {new Date(record.session.date).toLocaleDateString()}
-                  </span>
+              {student.attendanceRecords.length === 0 ? (
+                <p className="text-xs text-slate-500 py-3">No attendance records logged yet.</p>
+              ) : (
+                student.attendanceRecords.map((record: any) => (
+                  <div key={record.id} className="py-2.5 flex items-center justify-between text-xs">
+                    <span className="text-slate-300">
+                      Session Date: {new Date(record.session.date).toLocaleDateString()}
+                    </span>
 
-                  <span
-                    className={`px-2.5 py-1 rounded-lg font-semibold ${
-                      record.status === 'PRESENT'
-                        ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/60'
-                        : record.status === 'LATE'
-                        ? 'bg-amber-950/80 text-amber-300 border border-amber-800/60'
-                        : 'bg-rose-950/80 text-rose-300 border border-rose-800/60'
-                    }`}
-                  >
-                    {record.status}
-                  </span>
-                </div>
-              ))}
+                    <span
+                      className={`px-2.5 py-1 rounded-lg font-semibold ${
+                        record.status === 'PRESENT'
+                          ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/60'
+                          : record.status === 'LATE'
+                          ? 'bg-amber-950/80 text-amber-300 border border-amber-800/60'
+                          : 'bg-rose-950/80 text-rose-300 border border-rose-800/60'
+                      }`}
+                    >
+                      {record.status}
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
           {/* Homework Submission History */}
           <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
             <h3 className="font-bold text-white text-base border-b border-slate-800 pb-3">
-              Homework Submissions & Grades
+              Assessment Deliverables & Grades
             </h3>
 
             <div className="divide-y divide-slate-800/60">
-              {student.homeworkSubmissions.map((sub: any) => (
-                <div key={sub.id} className="py-2.5 flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-semibold text-white block">{sub.assignment.title}</span>
-                    <span className="text-[10px] text-slate-500">
-                      Due: {new Date(sub.assignment.dueDate).toLocaleDateString()}
-                    </span>
-                  </div>
+              {student.homeworkSubmissions.length === 0 ? (
+                <p className="text-xs text-slate-500 py-3">No homework deliverables assigned yet.</p>
+              ) : (
+                student.homeworkSubmissions.map((sub: any) => (
+                  <div key={sub.id} className="py-2.5 flex items-center justify-between text-xs">
+                    <div>
+                      <span className="font-semibold text-white block">{sub.assignment.title}</span>
+                      <span className="text-[10px] text-slate-500">
+                        Type: {sub.assignment.type || 'HOMEWORK'} &bull; Due: {new Date(sub.assignment.dueDate).toLocaleDateString()}
+                      </span>
+                    </div>
 
-                  <div className="flex items-center gap-3">
-                    <span className="text-slate-300 font-bold">
-                      {sub.grade !== null ? `${sub.grade} / ${sub.assignment.totalPoints}` : 'No Grade'}
-                    </span>
-                    <span
-                      className={`px-2.5 py-1 rounded-lg font-semibold ${
-                        sub.status === 'GRADED'
-                          ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/60'
-                          : sub.status === 'SUBMITTED'
-                          ? 'bg-indigo-950/80 text-indigo-300 border border-indigo-800/60'
-                          : 'bg-rose-950/80 text-rose-300 border border-rose-800/60'
-                      }`}
-                    >
-                      {sub.status}
-                    </span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-slate-300 font-bold">
+                        {sub.grade !== null ? `${sub.grade} / ${sub.assignment.totalPoints}` : 'No Grade'}
+                      </span>
+                      <span
+                        className={`px-2.5 py-1 rounded-lg font-semibold ${
+                          sub.status === 'GRADED'
+                            ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/60'
+                            : sub.status === 'SUBMITTED'
+                            ? 'bg-indigo-950/80 text-indigo-300 border border-indigo-800/60'
+                            : 'bg-rose-950/80 text-rose-300 border border-rose-800/60'
+                        }`}
+                      >
+                        {sub.status}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>

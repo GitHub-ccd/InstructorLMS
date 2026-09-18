@@ -16,15 +16,24 @@ async function main() {
   await prisma.course.deleteMany();
   await prisma.instructor.deleteMany();
 
-  // 1. Create Instructor
+  // 1. Create Instructors
   const instructor = await prisma.instructor.create({
     data: {
       name: 'Dr. Alex Vance',
       email: 'alex.vance@instructorlms.edu',
+      role: 'ADMIN',
     },
   });
 
-  console.log(`👤 Created Instructor: ${instructor.name}`);
+  const instructor2 = await prisma.instructor.create({
+    data: {
+      name: 'Prof. Sarah Connor',
+      email: 'sarah.connor@instructorlms.edu',
+      role: 'INSTRUCTOR',
+    },
+  });
+
+  console.log(`👤 Created Instructors: ${instructor.name} (ADMIN), ${instructor2.name} (INSTRUCTOR)`);
 
   // 2. Create Courses
   const courseCS = await prisma.course.create({
@@ -39,7 +48,7 @@ async function main() {
 
   const courseDS = await prisma.course.create({
     data: {
-      instructorId: instructor.id,
+      instructorId: instructor2.id,
       name: 'Data Science & Analytics',
       code: 'DS201',
       term: 'Fall 2026',
@@ -47,7 +56,7 @@ async function main() {
     },
   });
 
-  console.log(`📚 Created Courses: ${courseCS.code} and ${courseDS.code}`);
+  console.log(`📚 Created Courses: ${courseCS.code} (Dr. Vance) and ${courseDS.code} (Prof. Connor)`);
 
   // 3. Create Students
   const csStudentData = [
@@ -140,11 +149,11 @@ async function main() {
 
   console.log(`📅 Seeded Attendance Sessions & Records`);
 
-  // 6. Create Assignments & Homework Submissions
+  // 6. Create Assignments & Homework Matrix
   const csAssignments = [
-    { title: 'Assignment 1: HTML Semantic Structure', dueDate: new Date('2026-09-05T23:59:59Z'), totalPoints: 100 },
-    { title: 'Assignment 2: CSS Flexbox & Layouts', dueDate: new Date('2026-09-12T23:59:59Z'), totalPoints: 100 },
-    { title: 'Assignment 3: JavaScript DOM Manipulation', dueDate: new Date('2026-09-19T23:59:59Z'), totalPoints: 100 },
+    { title: 'Assignment 1: HTML Semantic Structure', dueDate: new Date('2026-09-05T23:59:59Z'), totalPoints: 100, type: 'HOMEWORK' as const },
+    { title: 'Quiz 1: CSS Flexbox & Box Model', dueDate: new Date('2026-09-12T23:59:59Z'), totalPoints: 50, type: 'QUIZ' as const },
+    { title: 'Presentation: Modern Web Architecture', dueDate: new Date('2026-09-19T23:59:59Z'), totalPoints: 100, type: 'PRESENTATION' as const },
   ];
 
   for (const aData of csAssignments) {

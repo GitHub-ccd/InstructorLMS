@@ -12,6 +12,7 @@ model Instructor {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String
+  role      String   @default("INSTRUCTOR") // INSTRUCTOR, ADMIN
   createdAt DateTime @default(now())
 
   courses Course[]
@@ -38,6 +39,7 @@ model Student {
   courseId  String
   name      String
   email     String?
+  isRemoved Boolean  @default(false)
   createdAt DateTime @default(now())
 
   course              Course               @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -70,13 +72,20 @@ model AttendanceRecord {
   @@unique([sessionId, studentId])
 }
 
+enum AssignmentType {
+  HOMEWORK
+  QUIZ
+  PRESENTATION
+}
+
 model Assignment {
-  id          String   @id @default(cuid())
+  id          String         @id @default(cuid())
   courseId    String
   title       String
   dueDate     DateTime
-  totalPoints Int      @default(100)
-  createdAt   DateTime @default(now())
+  totalPoints Int            @default(100)
+  type        AssignmentType @default(HOMEWORK)
+  createdAt   DateTime       @default(now())
 
   course      Course               @relation(fields: [courseId], references: [id], onDelete: Cascade)
   submissions HomeworkSubmission[]
