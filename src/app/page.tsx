@@ -1,0 +1,219 @@
+import Link from 'next/link';
+import { prisma } from '@/lib/prisma';
+import {
+  Users,
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
+  ArrowRight,
+  Sparkles,
+} from 'lucide-react';
+
+export const revalidate = 0; // Dynamic server rendering
+
+export default async function DashboardPage() {
+  // Fetch real data from DB
+  const courses = await prisma.course.findMany({
+    include: {
+      students: {
+        include: {
+          attendanceRecords: true,
+          homeworkSubmissions: true,
+          strategies: true,
+        },
+      },
+      attendanceSessions: true,
+      timeLogs: true,
+    },
+  });
+
+  const allStudents = courses.flatMap((c) => c.students);
+  const totalStudents = allStudents.length;
+
+  // Calculate Attendance Stats
+  let totalAttendanceCount = 0;
+  let presentCount = 0;
+
+  allStudents.forEach((student) => {
+    student.attendanceRecords.forEach((record) => {
+      totalAttendanceCount++;
+      if (record.status === 'PRESENT' || record.status === 'LATE') {
+        presentCount++;
+      }
+    });
+  });
+
+  const attendanceRate = totalAttendanceCount > 0
+    ? Math.round((presentCount / totalAttendanceCount) * 100)
+    : 100;
+
+  // Calculate Homework Stats
+  let totalHomeworkCount = 0;
+  let completedHomeworkCount = 0;
+
+  allStudents.forEach((student) => {
+    student.homeworkSubmissions.forEach((sub) => {
+      totalHomeworkCount++;
+      if (sub.status === 'SUBMITTED' || sub.status === 'GRADED') {
+        completedHomeworkCount++;
+      }
+    });
+  });
+
+  const homeworkRate = totalHomeworkCount > 0
+    ? Math.round((completedHomeworkCount / totalHomeworkCount) * 100)
+    : 100;
+
+  // At Risk Students (Absent > 1 or Missing Homework > 0 or Has Active Strategy)
+  const atRiskStudents = allStudents.filter((student) => {
+    const absents = student.attendanceRecords.filter((r) => r.status === 'ABSENT').length;
+    const missingHw = student.homeworkSubmissions.filter((h) => h.status === 'MISSING').length;
+    return absents > 0 || missingHw > 0 || student.strategies.length > 0;
+  });
+
+  // Total Prep & Teaching Hours
+  let totalPrepHours = 0;
+  let totalContactHours = 0;
+
+  courses.forEach((c) => {
+    c.timeLogs.forEach((log) => {
+      totalPrepHours += log.prepTimeHours;
+      totalContactHours += log.contactHours;
+    });
+  });
+
+  return (
+    <div className="space-y-8">
+      {/* Top Banner */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-indigo-900/40 via-slate-900 to-slate-900 p-6 rounded-2xl border border-indigo-500/20">
+        <div>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Class Analytics & Executive Dashboard</h2>
+          <p className="text-slate-400 text-sm mt-1">
+            Real-time monitoring of attendance trends, assignment velocities, and instructor time commitment.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/attendance"
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm rounded-xl transition shadow-lg shadow-indigo-600/20 flex items-center gap-2"
+          >
+            Log Attendance <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </div>
+
+      {/* High-Level Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Enrolled Students</span>
+            <div className="p-2 bg-slate-800/80 rounded-lg text-slate-300">
+              <Users className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="text-3xl font-extrabold text-white">{totalStudents}</div>
+          <p className="text-xs text-slate-400">Across {courses.length} active course sections</p>
+        </div>
+
+        <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Attendance Rate</span>
+            <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="text-3xl font-extrabold text-emerald-400">{attendanceRate}%</div>
+          <p className="text-xs text-slate-400">Present or late attendance ratio</p>
+        </div>
+
+        <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Homework Completion</span>
+            <div className="p-2 bg-indigo-500/10 text-indigo-400 rounded-lg border border-indigo-500/20">
+              <Sparkles className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="text-3xl font-extrabold text-indigo-400">{homeworkRate}%</div>
+          <p className="text-xs text-slate-400">Submitted & graded assignments</p>
+        </div>
+
+        <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Workload Logged</span>
+            <div className="p-2 bg-amber-500/10 text-amber-400 rounded-lg border border-amber-500/20">
+              <Clock className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="text-3xl font-extrabold text-amber-400">{(totalPrepHours + totalContactHours).toFixed(1)}h</div>
+          <p className="text-xs text-slate-400">{totalPrepHours}h prep + {totalContactHours}h contact</p>
+        </div>
+      </div>
+
+      {/* At Risk Students & Intervention Strategy Alerts */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-amber-400" />
+            <h3 className="text-lg font-bold text-white">At-Risk Students & Active Interventions</h3>
+          </div>
+          <span className="text-xs font-medium text-amber-400 bg-amber-950/60 px-2.5 py-1 rounded-full border border-amber-800/50">
+            {atRiskStudents.length} Flagged
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {atRiskStudents.map((student) => {
+            const course = courses.find((c) => c.id === student.courseId);
+            const absents = student.attendanceRecords.filter((r) => r.status === 'ABSENT').length;
+            const missingHw = student.homeworkSubmissions.filter((h) => h.status === 'MISSING').length;
+            const hasStrategy = student.strategies.length > 0;
+
+            return (
+              <div
+                key={student.id}
+                className="glass-card p-5 rounded-2xl border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between space-y-4"
+              >
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h4 className="font-bold text-white text-base">{student.name}</h4>
+                    <p className="text-xs text-slate-400">{course?.code} — {course?.name}</p>
+                  </div>
+                  <Link
+                    href={`/students/${student.id}`}
+                    className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                  >
+                    View Profile <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+
+                <div className="flex flex-wrap gap-2 text-xs">
+                  {absents > 0 && (
+                    <span className="bg-rose-950/80 text-rose-300 border border-rose-800/60 px-2.5 py-1 rounded-lg">
+                      {absents} Absentee Logged
+                    </span>
+                  )}
+                  {missingHw > 0 && (
+                    <span className="bg-amber-950/80 text-amber-300 border border-amber-800/60 px-2.5 py-1 rounded-lg">
+                      {missingHw} Missing Assignment
+                    </span>
+                  )}
+                  {hasStrategy && (
+                    <span className="bg-indigo-950/80 text-indigo-300 border border-indigo-800/60 px-2.5 py-1 rounded-lg">
+                      Strategy Active
+                    </span>
+                  )}
+                </div>
+
+                {hasStrategy && (
+                  <p className="text-xs italic text-slate-400 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                    "{student.strategies[0].strategyNotes}"
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
