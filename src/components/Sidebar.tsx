@@ -66,19 +66,21 @@ export default function Sidebar({ currentInstructor }: SidebarProps) {
         );
       })}
 
-      {/* Admin Panel Nav Link */}
-      <Link
-        href="/admin"
-        onClick={() => setMobileOpen(false)}
-        className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 ${
-          pathname.startsWith('/admin')
-            ? 'bg-amber-600/20 text-amber-300 border border-amber-500/30 shadow-sm'
-            : 'text-amber-400/80 hover:text-amber-300 hover:bg-amber-950/30'
-        }`}
-      >
-        <ShieldAlert className="w-5 h-5 text-amber-400" />
-        Admin Console
-      </Link>
+      {/* Admin Panel Nav Link - Restricted to Institutional Admins */}
+      {isAdmin && (
+        <Link
+          href="/admin"
+          onClick={() => setMobileOpen(false)}
+          className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 ${
+            pathname.startsWith('/admin')
+              ? 'bg-amber-600/20 text-amber-300 border border-amber-500/30 shadow-sm'
+              : 'text-amber-400/80 hover:text-amber-300 hover:bg-amber-950/30'
+          }`}
+        >
+          <ShieldAlert className="w-5 h-5 text-amber-400" />
+          Admin Console
+        </Link>
+      )}
     </div>
   );
 

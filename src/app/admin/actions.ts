@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { getActiveInstructor } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
 
 export async function createInstructorAction(data: {
@@ -9,6 +10,11 @@ export async function createInstructorAction(data: {
   role: 'INSTRUCTOR' | 'ADMIN';
 }) {
   try {
+    const caller = await getActiveInstructor();
+    if (caller?.role !== 'ADMIN') {
+      throw new Error('Unauthorized: Administrative role required.');
+    }
+
     const existing = await prisma.instructor.findUnique({
       where: { email: data.email },
     });
@@ -65,6 +71,11 @@ export async function createCourseAction(data: {
   defaultClassLengthMinutes?: number;
 }) {
   try {
+    const caller = await getActiveInstructor();
+    if (caller?.role !== 'ADMIN') {
+      throw new Error('Unauthorized: Administrative role required.');
+    }
+
     const created = await prisma.course.create({
       data: {
         instructorId: data.instructorId,
