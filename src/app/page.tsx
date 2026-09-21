@@ -125,15 +125,33 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Top Banner with Active Instructor Context */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-gradient-to-r from-indigo-950/60 via-slate-900 to-slate-900 p-6 rounded-2xl border border-indigo-500/20">
-        <div className="flex items-center gap-4">
-          <img
-            src={activeInstructor?.avatarUrl || '/avatars/default-avatar.svg'}
-            alt={activeInstructor?.name || 'Instructor'}
-            className="w-14 h-14 rounded-2xl object-cover border-2 border-indigo-500/40 bg-slate-800 shadow-md shrink-0"
-          />
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-gradient-to-r from-indigo-950/60 via-slate-900 to-slate-900 p-6 md:p-7 rounded-3xl border border-indigo-500/20 shadow-xl">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+          {activeInstructor ? (
+            <Link
+              href={`/instructors/${activeInstructor.id}`}
+              className="group relative block shrink-0"
+              title="View your Instructor Profile"
+            >
+              <img
+                src={activeInstructor.avatarUrl || '/avatars/default-avatar.svg'}
+                alt={activeInstructor.name}
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl object-cover border-2 border-indigo-500/40 bg-slate-800 shadow-xl transition duration-300 group-hover:border-indigo-400 group-hover:scale-105"
+              />
+              <span className="absolute -bottom-2 -right-1 text-[10px] font-bold bg-indigo-600 text-white px-2 py-0.5 rounded-full border border-indigo-400 shadow-md">
+                Profile
+              </span>
+            </Link>
+          ) : (
+            <img
+              src="/avatars/default-avatar.svg"
+              alt="Instructor"
+              className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl object-cover border-2 border-indigo-500/40 bg-slate-800 shadow-xl shrink-0"
+            />
+          )}
+
+          <div className="text-center sm:text-left">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
               <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-800/50 flex items-center gap-1">
                 <GraduationCap className="w-3.5 h-3.5" /> Instructor Portal
               </span>
@@ -143,11 +161,23 @@ export default async function DashboardPage() {
                 </span>
               )}
               <span className="text-xs text-slate-400">
-                Logged in: <strong className="text-white">{activeInstructor?.name || 'Dr. Alex Vance'}</strong>
+                Logged in:{' '}
+                {activeInstructor ? (
+                  <Link
+                    href={`/instructors/${activeInstructor.id}`}
+                    className="text-white hover:text-indigo-300 font-bold underline decoration-slate-600 underline-offset-4"
+                  >
+                    {activeInstructor.name}
+                  </Link>
+                ) : (
+                  <strong className="text-white">Dr. Alex Vance</strong>
+                )}
               </span>
             </div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Class Analytics & Executive Dashboard</h2>
-            <p className="text-slate-400 text-sm mt-1">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              Class Analytics & Executive Dashboard
+            </h2>
+            <p className="text-slate-400 text-sm mt-1 max-w-2xl">
               Real-time monitoring of attendance velocities, assessment completion, and instructor time commitment.
             </p>
           </div>
@@ -246,11 +276,11 @@ export default async function DashboardPage() {
                   className="glass-card p-5 rounded-2xl border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between space-y-4"
                 >
                   <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3.5">
                       <img
                         src={student.avatarUrl || '/avatars/default-avatar.svg'}
                         alt={student.name}
-                        className="w-10 h-10 rounded-full object-cover border border-slate-700 bg-slate-800 shrink-0"
+                        className="w-14 h-14 rounded-2xl object-cover border-2 border-slate-700 bg-slate-800 shadow-md shrink-0"
                       />
                       <div>
                         <h4 className="font-bold text-white text-base">{student.name}</h4>

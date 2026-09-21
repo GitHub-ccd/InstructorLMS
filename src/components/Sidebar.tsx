@@ -147,21 +147,54 @@ export default function Sidebar({ currentInstructor }: SidebarProps) {
         {/* Mobile User Profile Footer */}
         <div className="pt-4 border-t border-slate-800 space-y-3 text-xs">
           <div className="flex items-center gap-3">
-            <img
-              src={currentInstructor?.avatarUrl || '/avatars/default-avatar.svg'}
-              alt={instructorName}
-              className="w-10 h-10 rounded-full object-cover border border-slate-700 bg-slate-800 shrink-0"
-            />
+            {currentInstructor?.id ? (
+              <Link
+                href={`/instructors/${currentInstructor.id}`}
+                onClick={() => setMobileOpen(false)}
+                className="shrink-0 group"
+              >
+                <img
+                  src={currentInstructor?.avatarUrl || '/avatars/default-avatar.svg'}
+                  alt={instructorName}
+                  className="w-12 h-12 rounded-2xl object-cover border-2 border-slate-700 bg-slate-800 shadow transition group-hover:border-indigo-500"
+                />
+              </Link>
+            ) : (
+              <img
+                src="/avatars/default-avatar.svg"
+                alt={instructorName}
+                className="w-12 h-12 rounded-2xl object-cover border-2 border-slate-700 bg-slate-800 shadow shrink-0"
+              />
+            )}
             <div className="truncate flex-1">
               <div className="flex items-center gap-1.5">
-                <p className="font-bold text-slate-200 truncate">{instructorName}</p>
+                {currentInstructor?.id ? (
+                  <Link
+                    href={`/instructors/${currentInstructor.id}`}
+                    onClick={() => setMobileOpen(false)}
+                    className="font-bold text-slate-200 hover:text-indigo-300 truncate transition"
+                  >
+                    {instructorName}
+                  </Link>
+                ) : (
+                  <p className="font-bold text-slate-200 truncate">{instructorName}</p>
+                )}
                 {isAdmin && (
-                  <span className="text-[10px] bg-amber-950/80 text-amber-400 px-1 rounded border border-amber-800/40">
+                  <span className="text-[10px] bg-amber-950/80 text-amber-400 px-1 rounded border border-amber-800/40 shrink-0">
                     Admin
                   </span>
                 )}
               </div>
               <p className="truncate text-slate-500 text-[11px]">{instructorEmail}</p>
+              {currentInstructor?.id && (
+                <Link
+                  href={`/instructors/${currentInstructor.id}`}
+                  onClick={() => setMobileOpen(false)}
+                  className="text-[10px] font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 mt-0.5"
+                >
+                  View Profile &rarr;
+                </Link>
+              )}
             </div>
           </div>
           <Link
@@ -199,21 +232,48 @@ export default function Sidebar({ currentInstructor }: SidebarProps) {
         {/* Footer Info & Active Profile Switcher */}
         <div className="p-4 border-t border-slate-800/80 text-xs text-slate-400 space-y-3">
           <div className="flex items-center gap-3">
-            <img
-              src={currentInstructor?.avatarUrl || '/avatars/default-avatar.svg'}
-              alt={instructorName}
-              className="w-10 h-10 rounded-full object-cover border border-slate-700 bg-slate-800 shrink-0"
-            />
+            {currentInstructor?.id ? (
+              <Link href={`/instructors/${currentInstructor.id}`} className="shrink-0 group">
+                <img
+                  src={currentInstructor?.avatarUrl || '/avatars/default-avatar.svg'}
+                  alt={instructorName}
+                  className="w-12 h-12 rounded-2xl object-cover border-2 border-slate-700 bg-slate-800 shadow transition group-hover:border-indigo-500"
+                />
+              </Link>
+            ) : (
+              <img
+                src="/avatars/default-avatar.svg"
+                alt={instructorName}
+                className="w-12 h-12 rounded-2xl object-cover border-2 border-slate-700 bg-slate-800 shadow shrink-0"
+              />
+            )}
             <div className="truncate flex-1">
               <div className="flex items-center gap-1.5">
-                <p className="font-bold text-slate-200 truncate">{instructorName}</p>
+                {currentInstructor?.id ? (
+                  <Link
+                    href={`/instructors/${currentInstructor.id}`}
+                    className="font-bold text-slate-200 hover:text-indigo-300 truncate transition"
+                  >
+                    {instructorName}
+                  </Link>
+                ) : (
+                  <p className="font-bold text-slate-200 truncate">{instructorName}</p>
+                )}
                 {isAdmin && (
-                  <span className="text-[10px] bg-amber-950/80 text-amber-300 px-1.5 py-0.2 rounded border border-amber-800/50 font-semibold">
+                  <span className="text-[10px] bg-amber-950/80 text-amber-300 px-1.5 py-0.2 rounded border border-amber-800/50 font-semibold shrink-0">
                     Admin
                   </span>
                 )}
               </div>
               <p className="truncate text-slate-500 text-[11px]">{instructorEmail}</p>
+              {currentInstructor?.id && (
+                <Link
+                  href={`/instructors/${currentInstructor.id}`}
+                  className="text-[10px] font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 mt-0.5"
+                >
+                  View Profile &rarr;
+                </Link>
+              )}
             </div>
           </div>
 

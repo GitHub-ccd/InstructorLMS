@@ -13,6 +13,8 @@ import {
   UserX,
   RotateCcw,
   ShieldAlert,
+  Maximize2,
+  X,
 } from 'lucide-react';
 
 export default function StudentDetailClient({ student }: { student: any }) {
@@ -21,6 +23,7 @@ export default function StudentDetailClient({ student }: { student: any }) {
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isPendingRemoval, setIsPendingRemoval] = useState(false);
+  const [showLightbox, setShowLightbox] = useState(false);
 
   const handleSaveStrategy = async () => {
     setIsSaving(true);
@@ -52,16 +55,27 @@ export default function StudentDetailClient({ student }: { student: any }) {
         >
           <ArrowLeft className="w-4 h-4" /> Back to Student Roster
         </Link>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-          <div className="flex items-center gap-4">
-            <img
-              src={student.avatarUrl || '/avatars/default-avatar.svg'}
-              alt={student.name}
-              className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-700 bg-slate-800 shadow-lg shrink-0"
-            />
-            <div>
-              <div className="flex items-center gap-3">
-                <h2 className="text-2xl font-bold text-white tracking-tight">{student.name}</h2>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-800 pb-6">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+            {/* Enlarged Avatar with Click-to-Enlarge Overlay */}
+            <div
+              onClick={() => setShowLightbox(true)}
+              className="cursor-pointer relative w-32 h-32 md:w-40 md:h-40 rounded-3xl overflow-hidden border-4 border-slate-700/80 bg-slate-800 shadow-2xl shrink-0 group transition duration-300 hover:border-indigo-500/60"
+            >
+              <img
+                src={student.avatarUrl || '/avatars/default-avatar.svg'}
+                alt={student.name}
+                className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-xs font-semibold gap-1">
+                <Maximize2 className="w-5 h-5 text-indigo-300" />
+                <span>View Full Size</span>
+              </div>
+            </div>
+
+            <div className="text-center sm:text-left space-y-2">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
+                <h2 className="text-3xl font-extrabold text-white tracking-tight">{student.name}</h2>
                 {student.isRemoved ? (
                   <span className="text-xs bg-rose-950 text-rose-300 px-2.5 py-0.5 rounded-full border border-rose-800/60 font-semibold">
                     Archived / Removed
@@ -72,12 +86,13 @@ export default function StudentDetailClient({ student }: { student: any }) {
                   </span>
                 )}
               </div>
-              <p className="text-sm text-slate-400 mt-1">
-                {student.email || 'No institutional email'} — Enrolled in{' '}
+              <p className="text-sm text-slate-400">
+                {student.email || 'No institutional email'} &bull; Enrolled in{' '}
                 <span className="text-indigo-400 font-semibold">
                   {student.course.code}: {student.course.name}
                 </span>
               </p>
+              <p className="text-xs text-slate-500">Click avatar image to inspect full-size photo</p>
             </div>
           </div>
 
@@ -234,6 +249,38 @@ export default function StudentDetailClient({ student }: { student: any }) {
           </div>
         </div>
       </div>
+
+      {/* Lightbox Modal (Full-Size Headshot View) */}
+      {showLightbox && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+          onClick={() => setShowLightbox(false)}
+        >
+          <div
+            className="relative max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-4 shadow-2xl space-y-3"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+              <span className="font-bold text-white text-sm">{student.name}</span>
+              <button
+                type="button"
+                onClick={() => setShowLightbox(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white bg-slate-800"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="w-full aspect-square rounded-2xl overflow-hidden border border-slate-700 bg-slate-950">
+              <img
+                src={student.avatarUrl || '/avatars/default-avatar.svg'}
+                alt={student.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <p className="text-center text-xs text-slate-400 italic">Enrolled Student Headshot Asset</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

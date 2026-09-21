@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   createInstructorAction,
@@ -265,11 +266,12 @@ export default function AdminClient({
             <table className="w-full text-left border-collapse text-sm">
               <thead>
                 <tr className="border-b border-slate-800/80 bg-slate-900/50 text-slate-400 text-xs font-semibold">
-                  <th className="p-4">Name</th>
+                  <th className="p-4">Instructor</th>
                   <th className="p-4">Email</th>
                   <th className="p-4">Role</th>
                   <th className="p-4">Assigned Courses</th>
                   <th className="p-4">Total Students</th>
+                  <th className="p-4 text-right">Profile</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
@@ -278,13 +280,20 @@ export default function AdminClient({
                   return (
                     <tr key={inst.id} className="hover:bg-slate-800/30 transition">
                       <td className="p-4">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3.5">
                           <img
                             src={inst.avatarUrl || '/avatars/default-avatar.svg'}
                             alt={inst.name}
-                            className="w-8 h-8 rounded-full object-cover border border-slate-700 bg-slate-800 shrink-0"
+                            className="w-12 h-12 rounded-2xl object-cover border-2 border-slate-700 bg-slate-800 shadow shrink-0"
                           />
-                          <span className="font-semibold text-white">{inst.name}</span>
+                          <div>
+                            <Link
+                              href={`/instructors/${inst.id}`}
+                              className="font-bold text-white hover:text-indigo-300 transition"
+                            >
+                              {inst.name}
+                            </Link>
+                          </div>
                         </div>
                       </td>
                       <td className="p-4 text-slate-400">{inst.email}</td>
@@ -310,6 +319,14 @@ export default function AdminClient({
                         </div>
                       </td>
                       <td className="p-4 text-slate-300 font-medium">{studentCount}</td>
+                      <td className="p-4 text-right">
+                        <Link
+                          href={`/instructors/${inst.id}`}
+                          className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-indigo-400 hover:text-indigo-300 rounded-xl text-xs font-semibold border border-slate-700 transition inline-flex items-center gap-1"
+                        >
+                          View Profile &rarr;
+                        </Link>
+                      </td>
                     </tr>
                   );
                 })}
@@ -363,23 +380,31 @@ export default function AdminClient({
             <table className="w-full text-left border-collapse text-sm">
               <thead>
                 <tr className="border-b border-slate-800/80 bg-slate-900/50 text-slate-400 text-xs font-semibold">
-                  <th className="p-4">Student Name</th>
+                  <th className="p-4">Student</th>
                   <th className="p-4">Email</th>
                   <th className="p-4">Enrolled Course</th>
                   <th className="p-4">Lifecycle Status</th>
+                  <th className="p-4 text-right">Profile</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {students.map((s) => (
                   <tr key={s.id} className="hover:bg-slate-800/30 transition">
                     <td className="p-4">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3.5">
                         <img
                           src={s.avatarUrl || '/avatars/default-avatar.svg'}
                           alt={s.name}
-                          className="w-8 h-8 rounded-full object-cover border border-slate-700 bg-slate-800 shrink-0"
+                          className="w-12 h-12 rounded-2xl object-cover border-2 border-slate-700 bg-slate-800 shadow shrink-0"
                         />
-                        <span className="font-semibold text-white">{s.name}</span>
+                        <div>
+                          <Link
+                            href={`/students/${s.id}`}
+                            className="font-bold text-white hover:text-indigo-300 transition"
+                          >
+                            {s.name}
+                          </Link>
+                        </div>
                       </div>
                     </td>
                     <td className="p-4 text-slate-400">{s.email || '—'}</td>
@@ -398,6 +423,14 @@ export default function AdminClient({
                           Active Enrolled
                         </span>
                       )}
+                    </td>
+                    <td className="p-4 text-right">
+                      <Link
+                        href={`/students/${s.id}`}
+                        className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-indigo-400 hover:text-indigo-300 rounded-xl text-xs font-semibold border border-slate-700 transition inline-flex items-center gap-1"
+                      >
+                        View Profile &rarr;
+                      </Link>
                     </td>
                   </tr>
                 ))}

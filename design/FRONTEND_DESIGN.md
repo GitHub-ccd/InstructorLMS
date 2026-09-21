@@ -57,6 +57,11 @@ src/
 │   │   ├── page.tsx            # Deliverable Grade & Status Matrix (/homework)
 │   │   ├── HomeworkClient.tsx  # Matrix grid with Homework, Quiz, Presentation filters & avatar column
 │   │   └── actions.ts          # Server Actions: createAssignment, updateSubmissionGrade, deleteAssignment
+│   ├── instructors/
+│   │   ├── actions.ts          # Server Action: updateInstructorAvatarAction
+│   │   └── [id]/
+│   │       ├── page.tsx        # Instructor Profile Server Page (/instructors/[id])
+│   │       └── InstructorProfileClient.tsx # Educator profile, metrics, schedule, & lightbox
 │   ├── signin/
 │   │   ├── page.tsx            # Persona switcher (Alex Vance vs Sarah Connor) & Neon Magic Link
 │   │   └── SignInClient.tsx    # Interactive profile switcher client component
@@ -152,13 +157,26 @@ src/
   - **Enroll Student in Class Modal**: Allows instructors to enroll any registered student from the institutional directory into their courses.
   - **Soft-Delete Archive/Restore**: Instructors can archive inactive students without losing historical grade or attendance records.
 - **Profile Page (`/students/[id]/page.tsx`)**:
-  - Profile header with large student avatar.
+  - **Enlarged Profile Avatar**: Prominent `w-32 h-32 md:w-40 md:h-40` portrait badge with hover zoom hint.
+  - **Click-to-Enlarge Lightbox**: Clicking on the student's avatar opens a full-size modal view with zoom styling.
   - Comprehensive attendance record timeline and homework deliverable audit.
   - **Academic Intervention Log**: Free-form strategy notes editor with instant server action persistence.
 
 ---
 
-### G. Institutional Admin Console (`/admin` - [`src/app/admin/page.tsx`](file:///e:/My_GitHub__projects/InstructorLMS/src/app/admin/page.tsx))
+### G. Faculty Instructor Profile View (`/instructors/[id]` - [`src/app/instructors/[id]/page.tsx`](file:///e:/My_GitHub__projects/InstructorLMS/src/app/instructors/[id]/page.tsx))
+- **Type**: Hybrid (RSC page with interactive `InstructorProfileClient`).
+- **Core Features**:
+  - **Prominent Educator Headshot**: High-impact `w-36 h-36 md:w-44 md:h-44` framed headshot with hover zoom effect and click-to-enlarge lightbox modal.
+  - **In-Profile Avatar Modification**: "Change Photo" / "Update Profile Photo" button opening `<AvatarPicker>` (supporting Preset gallery, file upload, or live webcam snapshot).
+  - **Academic Metrics**: Total courses taught, total enrolled cohort count, cumulative contact teaching hours, and cumulative preparation hours.
+  - **Teaching Schedule & Course Sections**: Interactive course cards with student enrollment counts, class meeting lengths, and direct deep-links to each section's Attendance Tracker and Homework Matrix.
+  - **Labor & Workload Audit**: Comprehensive historical log of recent teaching sessions and preparation hours with session notes.
+  - **Role-Based Edit Rights**: Avatar modification is restricted to either the instructor viewing their own profile or institutional administrators.
+
+---
+
+### H. Institutional Admin Console (`/admin` - [`src/app/admin/page.tsx`](file:///e:/My_GitHub__projects/InstructorLMS/src/app/admin/page.tsx))
 - **Role Restriction**: Strictly accessible only by users with role `ADMIN` (e.g. Dr. Alex Vance). Standard instructors navigating here are greeted with an unauthorized restriction warning.
 - **Core Tabs**:
   1. **Instructors**: Directory of all faculty with avatars, roles, assigned courses, and an **Add Instructor** modal featuring `<AvatarPicker>`.

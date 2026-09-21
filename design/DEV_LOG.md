@@ -227,9 +227,31 @@ timeline
 
 ---
 
+## 📅 Milestone 7: Instructor Profile View & Enlarged Avatar Presentation
+
+### Tasks Completed:
+1. **Dedicated Instructor Profile View (`/instructors/[id]`)**:
+   - Built Server Component `src/app/instructors/[id]/page.tsx` querying instructor details, assigned courses, active cohorts, and workload logs.
+   - Built Client Component `src/app/instructors/[id]/InstructorProfileClient.tsx` featuring high-impact `w-36 h-36 md:w-44 md:h-44` framed headshot, workload metrics, teaching schedule cards, and labor audit history.
+   - Created Server Action `updateInstructorAvatarAction` in `src/app/instructors/actions.ts` with role-based permission verification.
+2. **Enlarged Profile Pictures**:
+   - **Student Profile (`/students/[id]`)**: Increased avatar from `w-16 h-16` (64px) to `w-32 h-32 md:w-40 md:h-40` (128–160px).
+   - **Instructor Profile (`/instructors/[id]`)**: Framed avatar rendered at `w-36 h-36 md:w-44 md:h-44`.
+   - **Student Cohort Cards (`/students`)**: Increased from `w-11 h-11` (44px) to `w-16 h-16` (64px).
+   - **Overview Dashboard Banner (`/`)**: Increased from `w-14 h-14` (56px) to `w-20 h-20 sm:w-24 sm:h-24` (80–96px) with direct link to profile.
+   - **At-Risk Cards (`/`)**: Increased from `w-10 h-10` to `w-14 h-14`.
+   - **Sidebar Footer (`Sidebar.tsx`)**: Increased from `w-10 h-10` to `w-12 h-12`.
+   - **Admin Console Tables (`AdminClient.tsx`)**: Increased from `w-8 h-8` to `w-12 h-12`.
+3. **Interactive Lightbox Modals**:
+   - Added click-to-enlarge modal dialogs on both Student Profile and Instructor Profile views so users can inspect headshots full-size.
+4. **App-Wide Navigation to Instructor Profile**:
+   - Added "View Profile" links in Sidebar footer, Dashboard banner, and Admin Console instructor directory table.
+
+---
+
 ## 📊 Summary Status
 
-- **Phase**: Phase 3 Asset & Avatar Integration Complete 🚀
+- **Phase**: Phase 4 Profile Enrichment & High-Res UX Complete 🚀
 - **Hosting**: Vercel (Hobby Tier - $0/mo)
 - **Database**: Neon Serverless PostgreSQL (`small-surf-10638308` - $0/mo)
 - **Auth**: Neon Auth (Managed Better Auth) + Session Switching
