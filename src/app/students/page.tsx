@@ -43,11 +43,23 @@ export default async function StudentsPage() {
     orderBy: { name: 'asc' },
   });
 
+  // Fetch institutional catalog courses for course scheduling
+  const catalogCourses = await prisma.course.findMany({
+    distinct: ['code'],
+    select: {
+      code: true,
+      name: true,
+      defaultClassLengthMinutes: true,
+    },
+    orderBy: { code: 'asc' },
+  });
+
   return (
     <StudentsClient
       students={students}
       courses={courses}
       allRegisteredStudents={allRegisteredStudents}
+      catalogCourses={catalogCourses}
     />
   );
 }

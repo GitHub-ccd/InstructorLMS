@@ -16,18 +16,24 @@ import {
   CheckCircle2,
   AlertCircle,
   Sparkles,
+  Info,
 } from 'lucide-react';
+
+import AddCourseButton from '@/components/AddCourseButton';
+import { CatalogCourse } from '@/components/AddCourseToScheduleModal';
 
 interface StudentsClientProps {
   students: any[];
   courses: any[];
   allRegisteredStudents: any[];
+  catalogCourses?: CatalogCourse[];
 }
 
 export default function StudentsClient({
   students,
   courses,
   allRegisteredStudents,
+  catalogCourses = [],
 }: StudentsClientProps) {
   const router = useRouter();
   const [filterMode, setFilterMode] = useState<'active' | 'archived'>('active');
@@ -36,11 +42,8 @@ export default function StudentsClient({
 
   // Modal states
   const [showEnrollModal, setShowEnrollModal] = useState(false);
-  const [enrollMode, setEnrollMode] = useState<'existing' | 'new'>('existing');
   const [selectedExistingStudentId, setSelectedExistingStudentId] = useState('');
   const [targetCourseId, setTargetCourseId] = useState(courses[0]?.id || '');
-  const [newStudentName, setNewStudentName] = useState('');
-  const [newStudentEmail, setNewStudentEmail] = useState('');
 
   const [isPending, setIsPending] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -96,23 +99,16 @@ export default function StudentsClient({
     setIsPending(true);
     setToast(null);
 
-    let nameToEnroll = newStudentName;
-    let emailToEnroll = newStudentEmail;
-
-    if (enrollMode === 'existing') {
-      const existing = allRegisteredStudents.find((s) => s.id === selectedExistingStudentId);
-      if (!existing) {
-        setToast({ type: 'error', text: 'Please select a registered student to enroll.' });
-        setIsPending(false);
-        return;
-      }
-      nameToEnroll = existing.name;
-      emailToEnroll = existing.email || '';
+    const existing = allRegisteredStudents.find((s) => s.id === selectedExistingStudentId);
+    if (!existing) {
+      setToast({ type: 'error', text: 'Please select a registered student from the directory.' });
+      setIsPending(false);
+      return;
     }
 
     const res = await enrollExistingStudentInCourse({
-      name: nameToEnroll,
-      email: emailToEnroll,
+      name: existing.name,
+      email: existing.email || '',
       courseId: targetCourseId,
     });
 
@@ -121,11 +117,10 @@ export default function StudentsClient({
     if (res.success) {
       setToast({
         type: 'success',
-        text: `${nameToEnroll} was successfully enrolled!`,
+        text: `${existing.name} was successfully enrolled in the class!`,
       });
       setShowEnrollModal(false);
-      setNewStudentName('');
-      setNewStudentEmail('');
+      setSelectedExistingStudentId('');
       router.refresh();
       setTimeout(() => setToast(null), 3500);
     } else {
@@ -147,11 +142,18 @@ export default function StudentsClient({
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          {catalogCourses.length > 0 && (
+            <AddCourseButton
+              catalogCourses={catalogCourses}
+              currentInstructorCourses={courses.map((c) => ({ code: c.code, term: c.term }))}
+              buttonText="Add Course to Schedule"
+            />
+          )}
           <button
             type="button"
             onClick={() => setShowEnrollModal(true)}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm rounded-xl transition flex items-center gap-2 shadow-lg shadow-indigo-600/20"
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm rounded-xl transition flex items-center gap-2 shadow-lg shadow-indigo-600/20"
           >
             <Plus className="w-4 h-4" /> Enroll Student in Class
           </button>
@@ -348,26 +350,12 @@ export default function StudentsClient({
               </button>
             </div>
 
-            {/* Sub-tabs: Select Existing vs Enter Details */}
-            <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
-              <button
-                type="button"
-                onClick={() => setEnrollMode('existing')}
-                className={`flex-1 py-1.5 rounded-lg transition ${
-                  enrollMode === 'existing' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                From Registered Directory
-              </button>
-              <button
-                type="button"
-                onClick={() => setEnrollMode('new')}
-                className={`flex-1 py-1.5 rounded-lg transition ${
-                  enrollMode === 'new' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Add Student Name
-              </button>
+            {/* Institutional Policy Notice */}
+            <div className="bg-slate-950/80 border border-slate-800 p-3 rounded-xl flex items-start gap-2.5 text-xs text-slate-300">
+              <Info className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+              <span>
+                <strong>Institutional Policy:</strong> Student registration is restricted to Administrators. Instructors may select and enroll registered students into their active teaching sections.
+              </span>
             </div>
 
             <form onSubmit={handleEnrollSubmit} className="space-y-4">
@@ -386,50 +374,24 @@ export default function StudentsClient({
                 </select>
               </div>
 
-              {enrollMode === 'existing' ? (
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Select Registered Student
-                  </label>
-                  <select
-                    value={selectedExistingStudentId}
-                    onChange={(e) => setSelectedExistingStudentId(e.target.value)}
-                    required
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500"
-                  >
-                    <option value="">-- Choose student from directory --</option>
-                    {allRegisteredStudents.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name} ({s.email || 'No email'})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : (
-                <>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Student Full Name</label>
-                    <input
-                      type="text"
-                      required
-                      value={newStudentName}
-                      onChange={(e) => setNewStudentName(e.target.value)}
-                      placeholder="Jane Doe"
-                      className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Student Email (Optional)</label>
-                    <input
-                      type="email"
-                      value={newStudentEmail}
-                      onChange={(e) => setNewStudentEmail(e.target.value)}
-                      placeholder="jane.doe@student.edu"
-                      className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500"
-                    />
-                  </div>
-                </>
-              )}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Select Registered Student from Directory
+                </label>
+                <select
+                  value={selectedExistingStudentId}
+                  onChange={(e) => setSelectedExistingStudentId(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="">-- Choose registered student --</option>
+                  {allRegisteredStudents.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name} ({s.email || 'No email registered'})
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               <div className="flex justify-end gap-2 pt-2">
                 <button

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { getActiveInstructor } from '@/lib/auth/server';
+import AddCourseButton from '@/components/AddCourseButton';
 import {
   Users,
   CheckCircle2,
@@ -17,6 +18,17 @@ export const revalidate = 0; // Dynamic server rendering
 
 export default async function DashboardPage() {
   const activeInstructor = await getActiveInstructor();
+
+  // All institutional catalog courses (distinct by course code)
+  const catalogCourses = await prisma.course.findMany({
+    distinct: ['code'],
+    select: {
+      code: true,
+      name: true,
+      defaultClassLengthMinutes: true,
+    },
+    orderBy: { code: 'asc' },
+  });
 
   // Fetch courses scoped to active instructor, or fallback to all courses
   let courses = await prisma.course.findMany({
@@ -135,6 +147,10 @@ export default async function DashboardPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
+          <AddCourseButton
+            catalogCourses={catalogCourses}
+            currentInstructorCourses={courses.map((c) => ({ code: c.code, term: c.term }))}
+          />
           <Link
             href="/signin"
             className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-medium text-xs rounded-xl border border-slate-700 transition flex items-center gap-1.5"

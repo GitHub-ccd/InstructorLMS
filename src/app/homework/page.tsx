@@ -45,5 +45,16 @@ export default async function HomeworkPage() {
     });
   }
 
-  return <HomeworkClient courses={courses} />;
+  // Fetch institutional catalog courses
+  const catalogCourses = await prisma.course.findMany({
+    distinct: ['code'],
+    select: {
+      code: true,
+      name: true,
+      defaultClassLengthMinutes: true,
+    },
+    orderBy: { code: 'asc' },
+  });
+
+  return <HomeworkClient courses={courses} catalogCourses={catalogCourses} />;
 }

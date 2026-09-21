@@ -72,7 +72,28 @@ async function main() {
     },
   });
 
-  console.log(`📚 Created Courses: ${courseCS.code} (Alex), ${courseDS.code} & ${courseSTAT.code} (Sarah)`);
+  // Pre-approved Institutional Catalog Courses (Created by Academic Administration)
+  const courseMATH = await prisma.course.create({
+    data: {
+      instructorId: alex.id,
+      name: 'Discrete Mathematics & Logic',
+      code: 'MATH101',
+      term: 'Fall 2026',
+      defaultClassLengthMinutes: 60,
+    },
+  });
+
+  const courseCS350 = await prisma.course.create({
+    data: {
+      instructorId: alex.id,
+      name: 'Cloud Computing & Distributed Systems',
+      code: 'CS350',
+      term: 'Fall 2026',
+      defaultClassLengthMinutes: 90,
+    },
+  });
+
+  console.log(`📚 Created Courses: ${courseCS.code}, ${courseMATH.code}, ${courseCS350.code} (Admin Alex), ${courseDS.code} & ${courseSTAT.code} (Sarah)`);
 
   // ==========================================
   // 3. Create Students

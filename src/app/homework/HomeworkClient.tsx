@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { updateHomeworkSubmission, createAssignmentAction } from './actions';
+import { updateHomeworkSubmission, createAssignmentAction, deleteAssignmentAction } from './actions';
 import { HomeworkStatus } from '@/types';
+import AddCourseButton from '@/components/AddCourseButton';
+import { CatalogCourse } from '@/components/AddCourseToScheduleModal';
 import {
   BookOpen,
   Plus,
@@ -15,13 +17,18 @@ import {
   CheckCircle2,
   AlertCircle,
   Calendar,
+  Trash2,
 } from 'lucide-react';
 
 interface HomeworkClientProps {
   courses: any[];
+  catalogCourses?: CatalogCourse[];
 }
 
-export default function HomeworkClient({ courses }: { courses: any[] }) {
+export default function HomeworkClient({
+  courses,
+  catalogCourses = [],
+}: HomeworkClientProps) {
   const router = useRouter();
   const [selectedCourseId, setSelectedCourseId] = useState(courses[0]?.id || '');
   const selectedCourse = courses.find((c) => c.id === selectedCourseId) || courses[0];
@@ -102,6 +109,36 @@ export default function HomeworkClient({ courses }: { courses: any[] }) {
     }
   };
 
+  const handleDeleteAssignment = async (assignmentId: string, title: string) => {
+    if (
+      !confirm(
+        `Are you sure you want to delete "${title}"?\n\nThis will permanently remove the assignment and all associated student submissions and recorded grades.`
+      )
+    ) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setToastMessage(null);
+
+    const res = await deleteAssignmentAction(assignmentId);
+    setIsSubmitting(false);
+
+    if (res.success) {
+      setToastMessage({
+        type: 'success',
+        text: res.message || `"${title}" was deleted.`,
+      });
+      router.refresh();
+      setTimeout(() => setToastMessage(null), 3500);
+    } else {
+      setToastMessage({
+        type: 'error',
+        text: res.error || 'Failed to delete assignment.',
+      });
+    }
+  };
+
   const getTypeBadge = (type: string) => {
     switch (type) {
       case 'QUIZ':
@@ -138,6 +175,14 @@ export default function HomeworkClient({ courses }: { courses: any[] }) {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
+          {catalogCourses.length > 0 && (
+            <AddCourseButton
+              catalogCourses={catalogCourses}
+              currentInstructorCourses={courses.map((c) => ({ code: c.code, term: c.term }))}
+              buttonText="Add Course to Schedule"
+            />
+          )}
+
           <select
             value={selectedCourseId}
             onChange={(e) => setSelectedCourseId(e.target.value)}
@@ -239,9 +284,19 @@ export default function HomeworkClient({ courses }: { courses: any[] }) {
                     <th key={assignment.id} className="p-4 min-w-[240px] border-r border-slate-800/40">
                       <div className="flex items-center justify-between gap-2 mb-1">
                         {getTypeBadge(assignment.type)}
-                        <span className="text-[11px] text-slate-400 font-mono">
-                          {assignment.totalPoints} pts
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[11px] text-slate-400 font-mono">
+                            {assignment.totalPoints} pts
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteAssignment(assignment.id, assignment.title)}
+                            title={`Delete ${assignment.title}`}
+                            className="p-1 text-slate-500 hover:text-rose-400 hover:bg-rose-950/60 rounded-md transition"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
                       <div className="font-bold text-slate-200 truncate" title={assignment.title}>
                         {assignment.title}
