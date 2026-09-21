@@ -53,25 +53,32 @@ export default function StudentDetailClient({ student }: { student: any }) {
           <ArrowLeft className="w-4 h-4" /> Back to Student Roster
         </Link>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-          <div>
-            <div className="flex items-center gap-3">
-              <h2 className="text-2xl font-bold text-white tracking-tight">{student.name}</h2>
-              {student.isRemoved ? (
-                <span className="text-xs bg-rose-950 text-rose-300 px-2.5 py-0.5 rounded-full border border-rose-800/60 font-semibold">
-                  Archived / Removed
+          <div className="flex items-center gap-4">
+            <img
+              src={student.avatarUrl || '/avatars/default-avatar.svg'}
+              alt={student.name}
+              className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-700 bg-slate-800 shadow-lg shrink-0"
+            />
+            <div>
+              <div className="flex items-center gap-3">
+                <h2 className="text-2xl font-bold text-white tracking-tight">{student.name}</h2>
+                {student.isRemoved ? (
+                  <span className="text-xs bg-rose-950 text-rose-300 px-2.5 py-0.5 rounded-full border border-rose-800/60 font-semibold">
+                    Archived / Removed
+                  </span>
+                ) : (
+                  <span className="text-xs bg-emerald-950 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-800/60 font-semibold">
+                    Active Enrolled
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-slate-400 mt-1">
+                {student.email || 'No institutional email'} — Enrolled in{' '}
+                <span className="text-indigo-400 font-semibold">
+                  {student.course.code}: {student.course.name}
                 </span>
-              ) : (
-                <span className="text-xs bg-emerald-950 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-800/60 font-semibold">
-                  Active Enrolled
-                </span>
-              )}
+              </p>
             </div>
-            <p className="text-sm text-slate-400 mt-1">
-              {student.email || 'No institutional email'} — Enrolled in{' '}
-              <span className="text-indigo-400 font-semibold">
-                {student.course.code}: {student.course.name}
-              </span>
-            </p>
           </div>
 
           <div>

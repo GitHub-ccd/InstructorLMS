@@ -314,8 +314,17 @@ export default function HomeworkClient({
                   <tr key={student.id} className="hover:bg-slate-900/40 transition">
                     {/* Sticky student cell */}
                     <td className="p-4 font-bold text-white sticky left-0 z-10 bg-slate-950/95 border-r border-slate-800">
-                      <div>{student.name}</div>
-                      <span className="text-xs font-normal text-slate-400 block truncate">{student.email || '—'}</span>
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={student.avatarUrl || '/avatars/default-avatar.svg'}
+                          alt={student.name}
+                          className="w-9 h-9 rounded-full object-cover border border-slate-700 bg-slate-800 shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <div className="truncate">{student.name}</div>
+                          <span className="text-xs font-normal text-slate-400 block truncate">{student.email || '—'}</span>
+                        </div>
+                      </div>
                     </td>
 
                     {filteredAssignments.map((assignment: any) => {

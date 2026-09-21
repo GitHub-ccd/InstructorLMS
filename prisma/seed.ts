@@ -24,6 +24,7 @@ async function main() {
       name: 'Dr. Alex Vance',
       email: 'alex.vance@instructorlms.edu',
       role: 'ADMIN',
+      avatarUrl: '/avatars/instructors/alex-vance.jpg',
     },
   });
 
@@ -32,6 +33,7 @@ async function main() {
       name: 'Prof. Sarah Connor',
       email: 'sarah.connor@instructorlms.edu',
       role: 'INSTRUCTOR',
+      avatarUrl: '/avatars/instructors/sarah-connor.jpg',
     },
   });
 
@@ -98,6 +100,15 @@ async function main() {
   // ==========================================
   // 3. Create Students
   // ==========================================
+  const studentAvatars = [
+    '/avatars/students/student-1.jpg',
+    '/avatars/students/student-2.jpg',
+    '/avatars/students/student-3.jpg',
+    '/avatars/students/student-4.jpg',
+    '/avatars/students/student-5.jpg',
+    '/avatars/students/student-6.jpg',
+  ];
+
   const csStudentsData = [
     { name: 'Marcus Brody', email: 'marcus.b@student.edu' },
     { name: 'Elena Rostova', email: 'elena.r@student.edu' },
@@ -109,11 +120,19 @@ async function main() {
     { name: 'Olivia Taylor', email: 'olivia.t@student.edu' },
   ];
 
+  let avatarIndex = 0;
+
   const csStudents = [];
   for (const s of csStudentsData) {
     const student = await prisma.student.create({
-      data: { courseId: courseCS.id, ...s, isRemoved: false },
+      data: {
+        courseId: courseCS.id,
+        ...s,
+        avatarUrl: studentAvatars[avatarIndex % studentAvatars.length],
+        isRemoved: false,
+      },
     });
+    avatarIndex++;
     csStudents.push(student);
   }
 
@@ -134,8 +153,13 @@ async function main() {
   const dsStudents = [];
   for (const s of dsStudentsData) {
     const student = await prisma.student.create({
-      data: { courseId: courseDS.id, ...s },
+      data: {
+        courseId: courseDS.id,
+        ...s,
+        avatarUrl: studentAvatars[avatarIndex % studentAvatars.length],
+      },
     });
+    avatarIndex++;
     dsStudents.push(student);
   }
 
@@ -154,8 +178,13 @@ async function main() {
   const statStudents = [];
   for (const s of statStudentsData) {
     const student = await prisma.student.create({
-      data: { courseId: courseSTAT.id, ...s },
+      data: {
+        courseId: courseSTAT.id,
+        ...s,
+        avatarUrl: studentAvatars[avatarIndex % studentAvatars.length],
+      },
     });
+    avatarIndex++;
     statStudents.push(student);
   }
 

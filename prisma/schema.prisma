@@ -13,6 +13,7 @@ model Instructor {
   email     String   @unique
   name      String
   role      String   @default("INSTRUCTOR") // INSTRUCTOR, ADMIN
+  avatarUrl String?
   createdAt DateTime @default(now())
 
   courses Course[]
@@ -39,6 +40,7 @@ model Student {
   courseId  String
   name      String
   email     String?
+  avatarUrl String?
   isRemoved Boolean  @default(false)
   createdAt DateTime @default(now())
 

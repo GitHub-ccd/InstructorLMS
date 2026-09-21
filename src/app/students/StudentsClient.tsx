@@ -254,16 +254,23 @@ export default function StudentsClient({
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-white text-base">{student.name}</h3>
-                        {student.isRemoved && (
-                          <span className="text-[10px] bg-rose-950 text-rose-300 px-2 py-0.5 rounded-full border border-rose-800/50">
-                            Archived
-                          </span>
-                        )}
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={student.avatarUrl || '/avatars/default-avatar.svg'}
+                        alt={student.name}
+                        className="w-11 h-11 rounded-full object-cover border border-slate-700 bg-slate-800 shrink-0"
+                      />
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold text-white text-base">{student.name}</h3>
+                          {student.isRemoved && (
+                            <span className="text-[10px] bg-rose-950 text-rose-300 px-2 py-0.5 rounded-full border border-rose-800/50">
+                              Archived
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-400 mt-0.5">{student.email || 'No email registered'}</p>
                       </div>
-                      <p className="text-xs text-slate-400 mt-0.5">{student.email || 'No email registered'}</p>
                     </div>
                     <span className="text-[10px] font-semibold bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 shrink-0">
                       {student.course.code}

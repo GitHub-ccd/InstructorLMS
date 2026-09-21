@@ -340,9 +340,16 @@ export default function AttendanceClient({ courses, activeInstructor }: Attendan
                     key={student.id}
                     className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-900/40 transition"
                   >
-                    <div>
-                      <h4 className="font-bold text-white text-sm">{student.name}</h4>
-                      <p className="text-xs text-slate-400">{student.email || 'No email registered'}</p>
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={student.avatarUrl || '/avatars/default-avatar.svg'}
+                        alt={student.name}
+                        className="w-10 h-10 rounded-full object-cover border border-slate-700 bg-slate-800 shrink-0"
+                      />
+                      <div>
+                        <h4 className="font-bold text-white text-sm">{student.name}</h4>
+                        <p className="text-xs text-slate-400">{student.email || 'No email registered'}</p>
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-2">

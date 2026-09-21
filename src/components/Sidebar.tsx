@@ -23,6 +23,7 @@ interface SidebarProps {
     name: string;
     email: string;
     role: string;
+    avatarUrl?: string | null;
   } | null;
 }
 
@@ -145,10 +146,15 @@ export default function Sidebar({ currentInstructor }: SidebarProps) {
 
         {/* Mobile User Profile Footer */}
         <div className="pt-4 border-t border-slate-800 space-y-3 text-xs">
-          <div className="flex items-center justify-between">
-            <div className="truncate">
+          <div className="flex items-center gap-3">
+            <img
+              src={currentInstructor?.avatarUrl || '/avatars/default-avatar.svg'}
+              alt={instructorName}
+              className="w-10 h-10 rounded-full object-cover border border-slate-700 bg-slate-800 shrink-0"
+            />
+            <div className="truncate flex-1">
               <div className="flex items-center gap-1.5">
-                <p className="font-bold text-slate-200">{instructorName}</p>
+                <p className="font-bold text-slate-200 truncate">{instructorName}</p>
                 {isAdmin && (
                   <span className="text-[10px] bg-amber-950/80 text-amber-400 px-1 rounded border border-amber-800/40">
                     Admin
@@ -192,8 +198,13 @@ export default function Sidebar({ currentInstructor }: SidebarProps) {
 
         {/* Footer Info & Active Profile Switcher */}
         <div className="p-4 border-t border-slate-800/80 text-xs text-slate-400 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="truncate">
+          <div className="flex items-center gap-3">
+            <img
+              src={currentInstructor?.avatarUrl || '/avatars/default-avatar.svg'}
+              alt={instructorName}
+              className="w-10 h-10 rounded-full object-cover border border-slate-700 bg-slate-800 shrink-0"
+            />
+            <div className="truncate flex-1">
               <div className="flex items-center gap-1.5">
                 <p className="font-bold text-slate-200 truncate">{instructorName}</p>
                 {isAdmin && (

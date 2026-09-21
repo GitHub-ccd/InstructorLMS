@@ -8,6 +8,7 @@ export async function createInstructorAction(data: {
   name: string;
   email: string;
   role: 'INSTRUCTOR' | 'ADMIN';
+  avatarUrl?: string;
 }) {
   try {
     const caller = await getActiveInstructor();
@@ -27,11 +28,13 @@ export async function createInstructorAction(data: {
         name: data.name,
         email: data.email,
         role: data.role,
+        avatarUrl: data.avatarUrl || null,
       },
     });
 
     revalidatePath('/admin');
     revalidatePath('/signin');
+    revalidatePath('/');
     return { success: true, instructor: created };
   } catch (err: any) {
     return { success: false, error: err.message };
@@ -42,13 +45,20 @@ export async function createStudentAction(data: {
   name: string;
   email?: string;
   courseId: string;
+  avatarUrl?: string;
 }) {
   try {
+    const caller = await getActiveInstructor();
+    if (caller?.role !== 'ADMIN') {
+      throw new Error('Unauthorized: Administrative role required to register students.');
+    }
+
     const created = await prisma.student.create({
       data: {
         name: data.name,
         email: data.email || null,
         courseId: data.courseId,
+        avatarUrl: data.avatarUrl || null,
         isRemoved: false,
       },
     });
@@ -57,6 +67,7 @@ export async function createStudentAction(data: {
     revalidatePath('/students');
     revalidatePath('/attendance');
     revalidatePath('/homework');
+    revalidatePath('/');
     return { success: true, student: created };
   } catch (err: any) {
     return { success: false, error: err.message };

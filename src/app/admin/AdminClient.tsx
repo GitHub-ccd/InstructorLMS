@@ -18,6 +18,7 @@ import {
   AlertCircle,
   X,
 } from 'lucide-react';
+import AvatarPicker from '@/components/AvatarPicker';
 
 interface AdminClientProps {
   currentInstructor: any;
@@ -45,6 +46,7 @@ export default function AdminClient({
     name: '',
     email: '',
     role: 'INSTRUCTOR' as 'INSTRUCTOR' | 'ADMIN',
+    avatarUrl: '',
   });
   const [courseForm, setCourseForm] = useState({
     instructorId: instructors[0]?.id || '',
@@ -57,6 +59,7 @@ export default function AdminClient({
     name: '',
     email: '',
     courseId: courses[0]?.id || '',
+    avatarUrl: '',
   });
 
   const [isPending, setIsPending] = useState(false);
@@ -71,7 +74,7 @@ export default function AdminClient({
     if (res.success) {
       setStatusMsg({ type: 'success', text: `Instructor ${instructorForm.name} created successfully!` });
       setShowInstructorModal(false);
-      setInstructorForm({ name: '', email: '', role: 'INSTRUCTOR' });
+      setInstructorForm({ name: '', email: '', role: 'INSTRUCTOR', avatarUrl: '' });
       router.refresh();
     } else {
       setStatusMsg({ type: 'error', text: res.error || 'Failed to create instructor' });
@@ -109,7 +112,7 @@ export default function AdminClient({
     if (res.success) {
       setStatusMsg({ type: 'success', text: `Student ${studentForm.name} registered and enrolled!` });
       setShowStudentModal(false);
-      setStudentForm({ name: '', email: '', courseId: courses[0]?.id || '' });
+      setStudentForm({ name: '', email: '', courseId: courses[0]?.id || '', avatarUrl: '' });
       router.refresh();
     } else {
       setStatusMsg({ type: 'error', text: res.error || 'Failed to register student' });
@@ -274,7 +277,16 @@ export default function AdminClient({
                   const studentCount = inst.courses.reduce((acc: number, c: any) => acc + (c.students?.length || 0), 0);
                   return (
                     <tr key={inst.id} className="hover:bg-slate-800/30 transition">
-                      <td className="p-4 font-semibold text-white">{inst.name}</td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={inst.avatarUrl || '/avatars/default-avatar.svg'}
+                            alt={inst.name}
+                            className="w-8 h-8 rounded-full object-cover border border-slate-700 bg-slate-800 shrink-0"
+                          />
+                          <span className="font-semibold text-white">{inst.name}</span>
+                        </div>
+                      </td>
                       <td className="p-4 text-slate-400">{inst.email}</td>
                       <td className="p-4">
                         <span
@@ -360,7 +372,16 @@ export default function AdminClient({
               <tbody className="divide-y divide-slate-800/60">
                 {students.map((s) => (
                   <tr key={s.id} className="hover:bg-slate-800/30 transition">
-                    <td className="p-4 font-semibold text-white">{s.name}</td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={s.avatarUrl || '/avatars/default-avatar.svg'}
+                          alt={s.name}
+                          className="w-8 h-8 rounded-full object-cover border border-slate-700 bg-slate-800 shrink-0"
+                        />
+                        <span className="font-semibold text-white">{s.name}</span>
+                      </div>
+                    </td>
                     <td className="p-4 text-slate-400">{s.email || '—'}</td>
                     <td className="p-4">
                       <span className="text-xs px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
@@ -389,7 +410,7 @@ export default function AdminClient({
       {/* Instructor Modal */}
       {showInstructorModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="font-bold text-white text-lg flex items-center gap-2">
                 <UserPlus className="w-5 h-5 text-indigo-400" /> Add New Instructor
@@ -399,6 +420,13 @@ export default function AdminClient({
               </button>
             </div>
             <form onSubmit={handleCreateInstructor} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-2">Profile Picture / Avatar</label>
+                <AvatarPicker
+                  currentAvatarUrl={instructorForm.avatarUrl}
+                  onSelect={(url: string) => setInstructorForm({ ...instructorForm, avatarUrl: url })}
+                />
+              </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
                 <input
@@ -549,7 +577,7 @@ export default function AdminClient({
       {/* Student Modal */}
       {showStudentModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="font-bold text-white text-lg flex items-center gap-2">
                 <Users className="w-5 h-5 text-emerald-400" /> Register & Enroll Student
@@ -559,6 +587,13 @@ export default function AdminClient({
               </button>
             </div>
             <form onSubmit={handleCreateStudent} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-2">Profile Picture / Avatar</label>
+                <AvatarPicker
+                  currentAvatarUrl={studentForm.avatarUrl}
+                  onSelect={(url: string) => setStudentForm({ ...studentForm, avatarUrl: url })}
+                />
+              </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">Student Full Name</label>
                 <input

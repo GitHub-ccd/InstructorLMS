@@ -88,6 +88,7 @@ export async function enrollExistingStudentInCourse(data: {
         name: data.name,
         email: data.email || existingStudent?.email || null,
         courseId: data.courseId,
+        avatarUrl: existingStudent?.avatarUrl || null,
         isRemoved: false,
       },
     });

@@ -126,24 +126,31 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       {/* Top Banner with Active Instructor Context */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-gradient-to-r from-indigo-950/60 via-slate-900 to-slate-900 p-6 rounded-2xl border border-indigo-500/20">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-800/50 flex items-center gap-1">
-              <GraduationCap className="w-3.5 h-3.5" /> Instructor Portal
-            </span>
-            {activeInstructor?.role === 'ADMIN' && (
-              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-800/50 flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5" /> Admin
+        <div className="flex items-center gap-4">
+          <img
+            src={activeInstructor?.avatarUrl || '/avatars/default-avatar.svg'}
+            alt={activeInstructor?.name || 'Instructor'}
+            className="w-14 h-14 rounded-2xl object-cover border-2 border-indigo-500/40 bg-slate-800 shadow-md shrink-0"
+          />
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-800/50 flex items-center gap-1">
+                <GraduationCap className="w-3.5 h-3.5" /> Instructor Portal
               </span>
-            )}
-            <span className="text-xs text-slate-400">
-              Logged in: <strong className="text-white">{activeInstructor?.name || 'Dr. Alex Vance'}</strong>
-            </span>
+              {activeInstructor?.role === 'ADMIN' && (
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-800/50 flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5" /> Admin
+                </span>
+              )}
+              <span className="text-xs text-slate-400">
+                Logged in: <strong className="text-white">{activeInstructor?.name || 'Dr. Alex Vance'}</strong>
+              </span>
+            </div>
+            <h2 className="text-2xl font-bold text-white tracking-tight">Class Analytics & Executive Dashboard</h2>
+            <p className="text-slate-400 text-sm mt-1">
+              Real-time monitoring of attendance velocities, assessment completion, and instructor time commitment.
+            </p>
           </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Class Analytics & Executive Dashboard</h2>
-          <p className="text-slate-400 text-sm mt-1">
-            Real-time monitoring of attendance velocities, assessment completion, and instructor time commitment.
-          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
@@ -239,13 +246,20 @@ export default async function DashboardPage() {
                   className="glass-card p-5 rounded-2xl border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between space-y-4"
                 >
                   <div className="flex items-start justify-between">
-                    <div>
-                      <h4 className="font-bold text-white text-base">{student.name}</h4>
-                      <p className="text-xs text-slate-400">{course?.code} — {course?.name}</p>
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={student.avatarUrl || '/avatars/default-avatar.svg'}
+                        alt={student.name}
+                        className="w-10 h-10 rounded-full object-cover border border-slate-700 bg-slate-800 shrink-0"
+                      />
+                      <div>
+                        <h4 className="font-bold text-white text-base">{student.name}</h4>
+                        <p className="text-xs text-slate-400">{course?.code} — {course?.name}</p>
+                      </div>
                     </div>
                     <Link
                       href={`/students/${student.id}`}
-                      className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                      className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 shrink-0"
                     >
                       View Profile <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
