@@ -40,8 +40,8 @@ export default function Sidebar({ currentInstructor }: SidebarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const instructorName = currentInstructor?.name || 'Dr. Alex Vance';
-  const instructorEmail = currentInstructor?.email || 'alex.vance@instructorlms.edu';
+  const instructorName = currentInstructor?.name || 'Dr. Indika Perera';
+  const instructorEmail = currentInstructor?.email || 'indika.perera@instructorlms.edu';
   const isAdmin = currentInstructor?.role === 'ADMIN';
 
   const NavLinks = () => (

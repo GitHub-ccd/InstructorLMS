@@ -21,10 +21,10 @@ async function main() {
   // ==========================================
   const alex = await prisma.instructor.create({
     data: {
-      name: 'Dr. Alex Vance',
-      email: 'alex.vance@instructorlms.edu',
+      name: 'Dr. Indika Perera',
+      email: 'indika.perera@instructorlms.edu',
       role: 'ADMIN',
-      avatarUrl: '/avatars/instructors/alex-vance.jpg',
+      avatarUrl: '/avatars/instructors/Indika Perera.jpg',
     },
   });
 

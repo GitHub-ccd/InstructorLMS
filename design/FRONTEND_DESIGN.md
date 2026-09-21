@@ -63,7 +63,7 @@ src/
 │   │       ├── page.tsx        # Instructor Profile Server Page (/instructors/[id])
 │   │       └── InstructorProfileClient.tsx # Educator profile, metrics, schedule, & lightbox
 │   ├── signin/
-│   │   ├── page.tsx            # Persona switcher (Alex Vance vs Sarah Connor) & Neon Magic Link
+│   │   ├── page.tsx            # Persona switcher (Indika Perera vs Sarah Connor) & Neon Magic Link
 │   │   └── SignInClient.tsx    # Interactive profile switcher client component
 │   ├── students/
 │   │   ├── page.tsx            # Student Roster Directory (/students)
@@ -177,7 +177,7 @@ src/
 ---
 
 ### H. Institutional Admin Console (`/admin` - [`src/app/admin/page.tsx`](file:///e:/My_GitHub__projects/InstructorLMS/src/app/admin/page.tsx))
-- **Role Restriction**: Strictly accessible only by users with role `ADMIN` (e.g. Dr. Alex Vance). Standard instructors navigating here are greeted with an unauthorized restriction warning.
+- **Role Restriction**: Strictly accessible only by users with role `ADMIN` (e.g. Dr. Indika Perera). Standard instructors navigating here are greeted with an unauthorized restriction warning.
 - **Core Tabs**:
   1. **Instructors**: Directory of all faculty with avatars, roles, assigned courses, and an **Add Instructor** modal featuring `<AvatarPicker>`.
   2. **Courses**: Institutional course catalog directory with an **Add Course** creation modal.
@@ -200,7 +200,7 @@ src/
 
 ### J. Profile Switcher & Persona Authentication (`/signin` - [`src/app/signin/page.tsx`](file:///e:/My_GitHub__projects/InstructorLMS/src/app/signin/page.tsx))
 - **Active Persona Cards**: Quick single-click switching between test profiles:
-  - **Dr. Alex Vance** (Institutional Admin persona with full catalog and student creation privileges).
+  - **Dr. Indika Perera** (Institutional Admin persona with full catalog and student creation privileges).
   - **Prof. Sarah Connor** (Standard Instructor persona with autonomous course deliverable control and student enrollment privileges).
 - **Neon Auth Magic Link**: Native passwordless magic link email authentication powered by Neon Auth.
 

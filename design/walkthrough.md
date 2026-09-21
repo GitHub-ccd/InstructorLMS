@@ -25,7 +25,7 @@ This opens Prisma Studio at **[http://localhost:5555](http://localhost:5555)** w
 ## 🎯 Features Built & Verified (Phases 1 & 2)
 
 1. **Instructor Access Portal & Neon Auth (`/signin`)**:
-   - 1-click active instructor profile selection (Dr. Alex Vance [Admin], Prof. Sarah Connor [Instructor]).
+   - 1-click active instructor profile selection (Dr. Indika Perera [Admin], Prof. Sarah Connor [Instructor]).
    - Neon Auth Magic Link integration for email verification without passwords.
    - Dynamic session switching via HTTP-only cookies; dashboard and courses automatically re-scope to the chosen instructor.
 

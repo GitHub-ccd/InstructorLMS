@@ -194,7 +194,7 @@ export default function SignInClient({ instructors }: { instructors: Instructor[
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="alex.vance@instructorlms.edu"
+                placeholder="indika.perera@instructorlms.edu"
                 className="w-full px-4 py-3 bg-slate-950/80 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500 transition placeholder:text-slate-600"
               />
             </div>

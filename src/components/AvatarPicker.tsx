@@ -10,7 +10,7 @@ interface AvatarPickerProps {
 }
 
 const PRESET_AVATARS = [
-  { url: '/avatars/instructors/alex-vance.jpg', label: 'Dr. Vance' },
+  { url: '/avatars/instructors/Indika Perera.jpg', label: 'Dr. Perera' },
   { url: '/avatars/instructors/sarah-connor.jpg', label: 'Prof. Connor' },
   { url: '/avatars/presets/preset-1.jpg', label: 'Student 1' },
   { url: '/avatars/presets/preset-2.jpg', label: 'Student 2' },

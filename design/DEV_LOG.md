@@ -249,9 +249,26 @@ timeline
 
 ---
 
+## 📅 Milestone 8: Administrator Persona Transition to Dr. Indika Perera
+
+### Tasks Completed:
+1. **Persona Update**:
+   - Replaced institutional administrator persona from **Dr. Alex Vance** to **Dr. Indika Perera** (`indika.perera@instructorlms.edu`).
+   - Updated profile avatar path to Next.js site asset `/avatars/instructors/Indika Perera.jpg` (along with normalized alias `/avatars/instructors/indika-perera.jpg`).
+2. **Neon Database Synchronization**:
+   - Updated live Neon PostgreSQL `Instructor` record for the Admin persona to `Dr. Indika Perera`, `indika.perera@instructorlms.edu`, and `/avatars/instructors/Indika Perera.jpg`.
+   - Updated `prisma/seed.ts` to seed `Dr. Indika Perera` as the initial administrator faculty member.
+3. **App-Wide UI Defaults & Presets**:
+   - Updated Sidebar fallback profile to `Dr. Indika Perera`.
+   - Updated Admin console switch-profile prompt to `Dr. Indika Perera - Admin`.
+   - Updated Sign-In portal placeholder to `indika.perera@instructorlms.edu`.
+   - Updated `<AvatarPicker>` preset collection to showcase `Dr. Perera`.
+
+---
+
 ## 📊 Summary Status
 
-- **Phase**: Phase 4 Profile Enrichment & High-Res UX Complete 🚀
+- **Phase**: Phase 4 Administrator Persona & Profile Customization Complete 🚀
 - **Hosting**: Vercel (Hobby Tier - $0/mo)
 - **Database**: Neon Serverless PostgreSQL (`small-surf-10638308` - $0/mo)
 - **Auth**: Neon Auth (Managed Better Auth) + Session Switching

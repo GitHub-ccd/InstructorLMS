@@ -36,7 +36,7 @@ export default async function AdminPage() {
               href="/signin"
               className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-medium transition border border-slate-700 flex items-center justify-center gap-1.5"
             >
-              <ArrowLeftRight className="w-4 h-4 text-indigo-400" /> Switch Profile (Dr. Alex Vance - Admin)
+              <ArrowLeftRight className="w-4 h-4 text-indigo-400" /> Switch Profile (Dr. Indika Perera - Admin)
             </Link>
           </div>
         </div>
