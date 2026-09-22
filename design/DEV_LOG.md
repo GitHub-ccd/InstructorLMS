@@ -4,27 +4,36 @@ This log records the chronological development trajectory of the **InstructorLMS
 
 ---
 
-## Chronological Development Milestones
+## Chronological Development Timeline
 
 ```mermaid
 timeline
-    title InstructorLMS Project Timeline
-    Phase 1 : Requirements & Design System
-            : Next.js 14 App Router Setup
-    Phase 2 : Database Modeling (Prisma)
-            : Seed Script Development
-    Phase 3 : Core Features & Server Actions
-            : Analytics, Attendance, Homework, Workload
-    Phase 4 : Neon Cloud Setup & Node.js Upgrade
-            : PostgreSQL Migration & Link
-    Phase 5 : Vercel Deployment & Live Launch
+    title InstructorLMS Project Development Trajectory
+    Phase 1 : Foundation & Core MVP
+            : Requirements, Design Tokens & App Router
+            : Relational Schema (Prisma) & Seeding
+            : Analytics Dashboard, Attendance, Homework, Workload
+    Phase 2 : Cloud & Deployment
+            : Neon Serverless PostgreSQL Link
+            : Vercel Production Deployment & CI/CD
+    Phase 3 : Multi-Persona & Governance
+            : Managed Neon Auth & Access Portal
+            : Institutional Admin Console & Classroom Autonomy
+    Phase 4 : Identity, Assets & Visuals
+            : Zero-Blob Profile Asset Architecture & AvatarPicker
+            : Dedicated Faculty Profiles & Lightbox Modals
+            : Administrator Transition to Dr. Indika Perera
+    Phase 5 : Production Gate & Access Control
+            : Route Interceptor Middleware (Strict Persona Gate)
+            : Session Invalidation & Dedicated Sign Out
 ```
 
 ---
 
-## 📅 Milestone 1: Requirements Alignment & Foundation Setup
+## Phase 1: Foundation & Core MVP
 
-### Tasks Completed:
+### 📅 Milestone 1: Requirements Alignment & Foundation Setup
+**Tasks Completed:**
 - Established core vision: Single-instructor LMS focusing on high density, zero operating cost, and fast UI interaction.
 - Created Next.js 14 application with TypeScript, Tailwind CSS, Lucide icons, and App Router structure.
 - Designed dark-mode color tokens (Slate/Zinc backdrops, Emerald present, Amber late, Rose absent, Indigo actions).
@@ -32,18 +41,16 @@ timeline
 
 ---
 
-## 📅 Milestone 2: Data Modeling & Local Database Seeding
-
-### Tasks Completed:
+### 📅 Milestone 2: Data Modeling & Local Database Seeding
+**Tasks Completed:**
 - Defined 9 core relational data models in [`prisma/schema.prisma`](file:///e:/My_GitHub__projects/InstructorLMS/prisma/schema.prisma): `Instructor`, `Course`, `Student`, `AttendanceSession`, `AttendanceRecord`, `Assignment`, `HomeworkSubmission`, `StudentStrategy`, `InstructorTimeLog`.
 - Created relational cascade rules (`onDelete: Cascade`) and composite unique constraints (`[sessionId, studentId]`, `[assignmentId, studentId]`).
-- Developed realistic fictitious seed script ([`prisma/seed.ts`](file:///e:/My_GitHub__projects/InstructorLMS/prisma/seed.ts)) populating instructor Dr. Alex Vance, 2 courses (CS101, DS201), 16 students, attendance sessions, homework submissions, and workload prep/contact logs.
+- Developed realistic fictitious seed script ([`prisma/seed.ts`](file:///e:/My_GitHub__projects/InstructorLMS/prisma/seed.ts)) populating instructor accounts, courses (CS101, DS201), students, attendance sessions, homework submissions, and workload prep/contact logs.
 
 ---
 
-## 📅 Milestone 3: Core UI Pages & Server Actions Implementation
-
-### Tasks Completed:
+### 📅 Milestone 3: Core UI Pages & Server Actions Implementation
+**Tasks Completed:**
 1. **Executive Class Analytics Dashboard (`/`)**:
    - Built Top 4 KPI summary cards (Enrolled Students, Attendance %, Homework Completion %, Total Workload Hours).
    - Integrated At-Risk student notification banner identifying students with <80% attendance or missing assignments.
@@ -63,9 +70,10 @@ timeline
 
 ---
 
-## 📅 Milestone 4: Neon PostgreSQL Cloud Infrastructure Setup
+## Phase 2: Cloud Infrastructure & Deployment
 
-### Tasks Completed:
+### 📅 Milestone 4: Neon PostgreSQL Cloud Infrastructure Setup
+**Tasks Completed:**
 - Installed `@neon/cli` globally (`npm i -g neon@latest`).
 - Initialized Neon configuration policy (`neon config init -s none`).
 - Installed `@neon/config` and `@neon/env` dependencies.
@@ -78,9 +86,8 @@ timeline
 
 ---
 
-## 📅 Milestone 5: Vercel Production Deployment & Launch
-
-### Tasks Completed:
+### 📅 Milestone 5: Vercel Production Deployment & Launch
+**Tasks Completed:**
 - Connected GitHub repository (`GitHub-ccd/InstructorLMS`) to Vercel.
 - Configured production environment variables (`DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `NEON_BRANCH`).
 - Triggered Vercel production build and verified zero-cost global deployment.
@@ -88,28 +95,28 @@ timeline
 
 ---
 
-## 🐛 Bugs Encountered & Fixes Applied
+### 🐛 Phase 1 & 2 Bugs Encountered & Fixes Applied
 
-### Bug 1: Hot Module Replacement (HMR) Connection Exhaustion
+#### Bug 1: Hot Module Replacement (HMR) Connection Exhaustion
 - **Symptom**: Local development server emitted `Too many connections` warnings during rapid page saves.
 - **Root Cause**: Next.js development server re-instantiated `PrismaClient` on every code change.
 - **Fix**: Implemented the global singleton pattern in [`src/lib/prisma.ts`](file:///e:/My_GitHub__projects/InstructorLMS/src/lib/prisma.ts) (`globalThis.prisma`).
 
-### Bug 2: Attendance Double-Counting in Aggregates
+#### Bug 2: Attendance Double-Counting in Aggregates
 - **Symptom**: Dashboard attendance percentage calculation exceeded 100% when a student's status was modified multiple times.
 - **Root Cause**: `AttendanceRecord` lacked a composite unique key constraint, allowing duplicate rows for the same `(sessionId, studentId)` combination.
 - **Fix**: Added `@@unique([sessionId, studentId])` constraint to `AttendanceRecord` schema and updated Server Action to use `upsert`.
 
-### Bug 3: Windows PowerShell Command Chaining Error
+#### Bug 3: Windows PowerShell Command Chaining Error
 - **Symptom**: Command `npm i -g neon@latest && neon login` failed with `The token '&&' is not a valid statement separator`.
-- **Root Cause**: Windows PowerShell parser does not support `&&` syntax in older execution contexts.
+- **Root Cause**: Windows PowerShell parser does not support `&&` syntax in default execution contexts.
 - **Fix**: Separated execution into single command invocations or used `;` as statement separator.
 
 ---
 
-## 🚧 Roadblocks Faced & Solutions
+### 🚧 Phase 1 & 2 Roadblocks Faced & Solutions
 
-### Roadblock 1: Node.js Version Incompatibility for `neon skills`
+#### Roadblock 1: Node.js Version Incompatibility for `neon skills`
 - **Challenge**: Executing `neon skills -y` threw:
   `ERROR: neon skills needs Node.js 22.20.0 or newer to run the skills CLI. This process is Node.js 22.16.0.`
 - **Solution**:
@@ -117,15 +124,16 @@ timeline
   2. Downloaded and set Node `v22.23.2` as default (`fnm default 22.23.2`).
   3. Configured user `PATH` and PowerShell profiles (`$PROFILE`) to ensure Node `v22.23.2` is active across all terminal sessions.
 
-### Roadblock 2: Automated Browser Driver Timeout on OAuth
+#### Roadblock 2: Automated Browser Driver Timeout on OAuth
 - **Challenge**: Automated browser OAuth login via `neon login` timed out due to a Playwright driver v1.57.0 404 download issue in the environment.
 - **Solution**: Generated direct web OAuth authentication URLs for manual user authorization, and linked project directly via `neon link --project-id small-surf-10638308`.
 
 ---
 
-## 📅 Milestone 6: Phase 2 Enhancements – Authentication, Admin Portal, & Advanced Classroom Tools
+## Phase 3: Multi-Persona Governance & Autonomy
 
-### Tasks Completed:
+### 📅 Milestone 6: Managed Neon Auth & Instructor Access Portal
+**Tasks Completed:**
 1. **Damage Assessment & Recovery**:
    - Assessed repository state after agent session interruption: working tree was completely clean, zero uncommitted or corrupted files, and all architecture specifications remained intact.
 2. **Neon Auth Integration**:
@@ -138,7 +146,7 @@ timeline
      - `Instructor`: added `role String @default("INSTRUCTOR")` (`INSTRUCTOR`, `ADMIN`).
      - `Assignment`: added `enum AssignmentType { HOMEWORK, QUIZ, PRESENTATION }` with `type AssignmentType @default(HOMEWORK)`.
      - `Student`: added soft-delete flag `isRemoved Boolean @default(false)`.
-   - Executed `npx prisma db push` and seeded multi-instructor sample data (Dr. Alex Vance [Admin] and Prof. Sarah Connor [Instructor]).
+   - Executed `npx prisma db push` and seeded multi-instructor sample data (Administrator persona and Prof. Sarah Connor [Instructor]).
 4. **Institutional Admin Portal (`/admin`)**:
    - Built [`src/app/admin/page.tsx`](file:///e:/My_GitHub__projects/InstructorLMS/src/app/admin/page.tsx) with institutional directories for Instructors, Courses, and Registered Students.
    - Implemented server actions to create new instructors with roles, configure courses, and register new students.
@@ -159,36 +167,8 @@ timeline
 
 ---
 
-## 🐛 Bugs Encountered & Fixes Applied
-
-### Bug 4: Peer Dependency Mismatch for `@neondatabase/auth` on Next.js 14
-- **Symptom**: `npm install @neondatabase/auth` failed with `ERESOLVE could not resolve peerOptional next@">=16.0.0"`.
-- **Root Cause**: `@neondatabase/auth@0.5.0-beta` declared an optional peer dependency targeting Next.js 16+, which triggered npm's strict peer-resolution check on Next.js 14.
-- **Fix**: Installed using `--legacy-peer-deps` (`npm install @neondatabase/auth --legacy-peer-deps`). The package functions seamlessly with Next.js 14 server handlers.
-
-### Bug 5: TypeScript Implicit Any in Dynamic Course Queries
-- **Symptom**: `npm run build` failed with `Type error: Variable 'courses' implicitly has type 'any[]'`.
-- **Root Cause**: `let courses = []` initialized an untyped empty array before conditional prisma calls.
-- **Fix**: Replaced with direct ternary Prisma queries (`prisma.course.findMany({ where: activeInstructor ? { instructorId: activeInstructor.id } : {} })`).
-
-### Bug 6: Neon Serverless Connection Closed (`Error { kind: Closed, cause: None }`)
-- **Symptom**: `prisma:error Error in PostgreSQL connection: Error { kind: Closed, cause: None }` logged in terminal after idle periods or navigation.
-- **Root Cause**: Neon's pooled endpoint uses PgBouncer in transaction mode and Neon compute suspends after 5 minutes of idle time. Without `pgbouncer=true` and `connect_timeout` parameters in `DATABASE_URL`, Prisma retains prepared statements and reports idle socket closures when PgBouncer drops or recycles connections.
-- **Fix**: Appended `&pgbouncer=true&connect_timeout=30` to `DATABASE_URL` in `.env` and `.env.local`. This informs Prisma to disable prepared statements for transaction pooling compatibility and allows a 30s window for Neon serverless compute resume.
-
----
-
-## 🚧 Roadblocks Faced & Solutions
-
-### Roadblock 3: Playwright Driver 404 on AzureEdge CDN
-- **Challenge**: Automated browser testing subagent encountered a 404 when downloading `playwright-1.57.0-win32_x64.zip` from Microsoft's Azure CDN.
-- **Solution**: Executed full HTTP verification across all 8 application endpoints using Node.js fetch against the live server, confirming `200 OK` responses and complete HTML page generation.
-
----
-
-## 📅 Milestone 5: Instructor Persona Restrictions & Autonomy Enforcements
-
-### Tasks Completed:
+### 📅 Milestone 7: Instructor Persona Restrictions & Autonomy Enforcements
+**Tasks Completed:**
 1. **Course Scheduling Separation**:
    - Instructors are restricted from creating new courses (Admin-only).
    - Added `addExistingCourseToScheduleAction` allowing instructors to select pre-approved courses from the institutional catalog and add them to their schedule.
@@ -205,16 +185,44 @@ timeline
 
 ---
 
-## 📅 Milestone 6: Profile Picture System (Static Site Assets, AI Headshots, and Multi-Modal AvatarPicker)
+### 🐛 Phase 3 Bugs Encountered & Fixes Applied
 
-### Tasks Completed:
+#### Bug 4: Peer Dependency Mismatch for `@neondatabase/auth` on Next.js 14
+- **Symptom**: `npm install @neondatabase/auth` failed with `ERESOLVE could not resolve peerOptional next@">=16.0.0"`.
+- **Root Cause**: `@neondatabase/auth@0.5.0-beta` declared an optional peer dependency targeting Next.js 16+, which triggered npm's strict peer-resolution check on Next.js 14.
+- **Fix**: Installed using `--legacy-peer-deps` (`npm install @neondatabase/auth --legacy-peer-deps`). The package functions seamlessly with Next.js 14 server handlers.
+
+#### Bug 5: TypeScript Implicit Any in Dynamic Course Queries
+- **Symptom**: `npm run build` failed with `Type error: Variable 'courses' implicitly has type 'any[]'`.
+- **Root Cause**: `let courses = []` initialized an untyped empty array before conditional prisma calls.
+- **Fix**: Replaced with direct ternary Prisma queries (`prisma.course.findMany({ where: activeInstructor ? { instructorId: activeInstructor.id } : {} })`).
+
+#### Bug 6: Neon Serverless Connection Closed (`Error { kind: Closed, cause: None }`)
+- **Symptom**: `prisma:error Error in PostgreSQL connection: Error { kind: Closed, cause: None }` logged in terminal after idle periods or navigation.
+- **Root Cause**: Neon's pooled endpoint uses PgBouncer in transaction mode and Neon compute suspends after 5 minutes of idle time. Without `pgbouncer=true` and `connect_timeout` parameters in `DATABASE_URL`, Prisma retains prepared statements and reports idle socket closures when PgBouncer drops or recycles connections.
+- **Fix**: Appended `&pgbouncer=true&connect_timeout=30` to `DATABASE_URL` in `.env` and `.env.local`. This informs Prisma to disable prepared statements for transaction pooling compatibility and allows a 30s window for Neon serverless compute resume.
+
+---
+
+### 🚧 Phase 3 Roadblocks Faced & Solutions
+
+#### Roadblock 3: Playwright Driver 404 on AzureEdge CDN
+- **Challenge**: Automated browser testing subagent encountered a 404 when downloading `playwright-1.57.0-win32_x64.zip` from Microsoft's Azure CDN.
+- **Solution**: Executed full HTTP verification across all 8 application endpoints using Node.js fetch against the live server, confirming `200 OK` responses and complete HTML page generation.
+
+---
+
+## Phase 4: Media, Visual Identity & High-Density UX
+
+### 📅 Milestone 8: Zero-Blob Profile Picture System & AvatarPicker
+**Tasks Completed:**
 1. **Zero-Blob Database Architecture**:
    - Strictly enforced that image binary data is not stored in Neon PostgreSQL.
    - Added `avatarUrl String?` to `Instructor` and `Student` models in `prisma/schema.prisma`.
    - Executed `npx prisma db push` to synchronize schema with remote Neon PostgreSQL without migrations.
 2. **Static Site Asset Library**:
    - Created `/public/avatars/` with subdirectories: `instructors/`, `students/`, `presets/`, and `uploads/`.
-   - Generated low-resolution AI headshots for existing instructors (Dr. Alex Vance, Prof. Sarah Connor) and 6 student headshots.
+   - Generated low-resolution AI headshots for existing instructors and 6 student headshots.
    - Created SVG fallback asset at `/public/avatars/default-avatar.svg`.
 3. **Multi-Modal Interactive `<AvatarPicker>`**:
    - Created `src/components/AvatarPicker.tsx` with 3 input tabs: Preset Gallery, Local File Upload, and Live Webcam Capture (`navigator.mediaDevices.getUserMedia`) with snapshot shutter.
@@ -223,13 +231,12 @@ timeline
 4. **App-Wide Avatar Display**:
    - Rendered circular avatars in Sidebar, Overview Dashboard, At-Risk cards, Student Roster cards, Student Profile header, Attendance roll-call roster, and sticky Homework matrix column.
 5. **Database Seed Update**:
-   - Updated `prisma/seed.ts` to assign headshots to Dr. Alex Vance, Prof. Sarah Connor, and distributed student avatars across all 26 seeded students.
+   - Updated `prisma/seed.ts` to assign headshots to faculty and distributed student avatars across all 26 seeded students.
 
 ---
 
-## 📅 Milestone 7: Instructor Profile View & Enlarged Avatar Presentation
-
-### Tasks Completed:
+### 📅 Milestone 9: Dedicated Instructor Profile View & Enlarged Media
+**Tasks Completed:**
 1. **Dedicated Instructor Profile View (`/instructors/[id]`)**:
    - Built Server Component `src/app/instructors/[id]/page.tsx` querying instructor details, assigned courses, active cohorts, and workload logs.
    - Built Client Component `src/app/instructors/[id]/InstructorProfileClient.tsx` featuring high-impact `w-36 h-36 md:w-44 md:h-44` framed headshot, workload metrics, teaching schedule cards, and labor audit history.
@@ -249,16 +256,18 @@ timeline
 
 ---
 
-## 📅 Milestone 8: Administrator Persona Transition to Dr. Indika Perera
-
-### Tasks Completed:
+### 📅 Milestone 10: Administrator Persona Transition to Dr. Indika Perera
+**Tasks Completed:**
 1. **Persona Update**:
    - Replaced institutional administrator persona from **Dr. Alex Vance** to **Dr. Indika Perera** (`indika.perera@instructorlms.edu`).
-   - Updated profile avatar path to Next.js site asset `/avatars/instructors/Indika Perera.jpg` (along with normalized alias `/avatars/instructors/indika-perera.jpg`).
-2. **Neon Database Synchronization**:
+   - Integrated personal photograph as site asset at `/public/avatars/instructors/Indika Perera.jpg` and normalized URL alias `/public/avatars/instructors/indika-perera.jpg`.
+2. **Photo Cropping & Framing Refinement**:
+   - Cropped 183px of excess torso/jacket off the bottom of the original `305 × 488px` portrait to create a balanced `305 × 305px` square portrait.
+   - Verified that the head, crown, and hair have sufficient headspace and the face is positioned in the center, preventing top-of-head truncation in circular and squircle avatar containers.
+3. **Neon Database Synchronization**:
    - Updated live Neon PostgreSQL `Instructor` record for the Admin persona to `Dr. Indika Perera`, `indika.perera@instructorlms.edu`, and `/avatars/instructors/Indika Perera.jpg`.
    - Updated `prisma/seed.ts` to seed `Dr. Indika Perera` as the initial administrator faculty member.
-3. **App-Wide UI Defaults & Presets**:
+4. **App-Wide UI Defaults & Presets**:
    - Updated Sidebar fallback profile to `Dr. Indika Perera`.
    - Updated Admin console switch-profile prompt to `Dr. Indika Perera - Admin`.
    - Updated Sign-In portal placeholder to `indika.perera@instructorlms.edu`.
@@ -266,9 +275,10 @@ timeline
 
 ---
 
-## 📅 Milestone 9: Strict Persona Authentication Gate & Session Boundaries
+## Phase 5: Production Gate & Access Control
 
-### Tasks Completed:
+### 📅 Milestone 11: Strict Persona Authentication Gate & Session Boundaries
+**Tasks Completed:**
 1. **Next.js Middleware Gate (`src/middleware.ts`)**:
    - Implemented route interceptor protecting all application routes (`/`, `/attendance`, `/homework`, `/students`, `/workload`, `/announcements`, `/admin`, `/instructors/*`).
    - Requests without an active instructor session are automatically redirected to `/signin`.
@@ -285,8 +295,9 @@ timeline
 
 ## 📊 Summary Status
 
-- **Phase**: Phase 4 Strict Persona Gate & Access Control Enforced 🚀
+- **Current Phase**: Phase 5 (Production Gate & Access Control Enforced) 🚀
+- **Total Milestones Completed**: 11
 - **Hosting**: Vercel (Hobby Tier - $0/mo)
 - **Database**: Neon Serverless PostgreSQL (`small-surf-10638308` - $0/mo)
-- **Auth**: Neon Auth (Managed Better Auth) + Strict Persona Gate + Session Switching
+- **Auth**: Neon Auth (Managed Better Auth) + Strict Next.js Middleware Gate + Session Switching
 - **Build Verification**: Clean Next.js 14 production build (`npm run build` exited with code 0)
