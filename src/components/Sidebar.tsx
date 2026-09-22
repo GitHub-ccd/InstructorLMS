@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   ClipboardCheck,
@@ -13,9 +13,11 @@ import {
   GraduationCap,
   ShieldAlert,
   ArrowLeftRight,
+  LogOut,
   Menu,
   X,
 } from 'lucide-react';
+import { signOutInstructor } from '@/app/actions/authActions';
 
 interface SidebarProps {
   currentInstructor?: {
@@ -38,7 +40,25 @@ const navItems = [
 
 export default function Sidebar({ currentInstructor }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  // If on signin page, don't show the sidebar
+  if (pathname === '/signin') {
+    return null;
+  }
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    try {
+      await signOutInstructor();
+      router.push('/signin');
+      router.refresh();
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
 
   const instructorName = currentInstructor?.name || 'Dr. Indika Perera';
   const instructorEmail = currentInstructor?.email || 'indika.perera@instructorlms.edu';
@@ -197,13 +217,27 @@ export default function Sidebar({ currentInstructor }: SidebarProps) {
               )}
             </div>
           </div>
-          <Link
-            href="/signin"
-            onClick={() => setMobileOpen(false)}
-            className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-medium flex items-center justify-center gap-2 border border-slate-700 transition"
-          >
-            <ArrowLeftRight className="w-3.5 h-3.5" /> Switch Profile
-          </Link>
+          <div className="flex gap-2">
+            <Link
+              href="/signin"
+              onClick={() => setMobileOpen(false)}
+              className="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 border border-slate-700 transition"
+            >
+              <ArrowLeftRight className="w-3.5 h-3.5 text-indigo-400" /> Switch
+            </Link>
+            <button
+              type="button"
+              disabled={isSigningOut}
+              onClick={() => {
+                setMobileOpen(false);
+                handleSignOut();
+              }}
+              className="py-2 px-3 bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 hover:text-rose-200 rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 border border-rose-800/40 transition disabled:opacity-50"
+              title="Sign Out of Active Session"
+            >
+              <LogOut className="w-3.5 h-3.5" /> Sign Out
+            </button>
+          </div>
         </div>
       </div>
 
@@ -277,12 +311,23 @@ export default function Sidebar({ currentInstructor }: SidebarProps) {
             </div>
           </div>
 
-          <Link
-            href="/signin"
-            className="w-full py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl font-medium text-xs flex items-center justify-center gap-2 border border-slate-700/80 transition"
-          >
-            <ArrowLeftRight className="w-3.5 h-3.5 text-indigo-400" /> Switch / Sign In
-          </Link>
+          <div className="flex gap-2">
+            <Link
+              href="/signin"
+              className="flex-1 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 border border-slate-700/80 transition"
+            >
+              <ArrowLeftRight className="w-3.5 h-3.5 text-indigo-400" /> Switch
+            </Link>
+            <button
+              type="button"
+              disabled={isSigningOut}
+              onClick={handleSignOut}
+              className="py-2 px-3 bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 hover:text-rose-200 rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 border border-rose-800/40 transition disabled:opacity-50"
+              title="Sign Out of Active Session"
+            >
+              <LogOut className="w-3.5 h-3.5" /> Sign Out
+            </button>
+          </div>
 
           <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[10px] text-slate-500">
             <span>Operating Cost:</span>

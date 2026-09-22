@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { switchInstructor } from '@/app/actions/authActions';
 import { authClient } from '@/lib/auth/client';
@@ -11,10 +12,22 @@ interface Instructor {
   name: string;
   email: string;
   role: string;
+  avatarUrl?: string | null;
   courses: { id: string; name: string; code: string }[];
 }
 
-export default function SignInClient({ instructors }: { instructors: Instructor[] }) {
+interface SignInClientProps {
+  instructors: Instructor[];
+  currentInstructor?: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    avatarUrl?: string | null;
+  } | null;
+}
+
+export default function SignInClient({ instructors, currentInstructor }: SignInClientProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'select' | 'magic'>('select');
   const [email, setEmail] = useState('');
@@ -89,6 +102,34 @@ export default function SignInClient({ instructors }: { instructors: Instructor[
           </p>
         </div>
 
+        {/* Active Session Quick Return Banner */}
+        {currentInstructor && (
+          <div className="mb-6 p-4 rounded-2xl bg-indigo-950/40 border border-indigo-800/60 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <img
+                src={currentInstructor.avatarUrl || '/avatars/default-avatar.svg'}
+                alt={currentInstructor.name}
+                className="w-10 h-10 rounded-xl object-cover border border-indigo-500/40 shrink-0"
+              />
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> Active Session
+                  </span>
+                  <span className="text-xs text-white font-bold truncate">{currentInstructor.name}</span>
+                </div>
+                <p className="text-[11px] text-slate-400 truncate">{currentInstructor.email}</p>
+              </div>
+            </div>
+            <Link
+              href="/"
+              className="py-2 px-3.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-indigo-600/30 shrink-0"
+            >
+              Enter Dashboard <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
+
         {/* Tab Switcher */}
         <div className="flex bg-slate-950/80 p-1.5 rounded-2xl border border-slate-800 mb-8">
           <button
@@ -140,44 +181,81 @@ export default function SignInClient({ instructors }: { instructors: Instructor[
               Select an authorized instructor to enter your dashboard:
             </p>
             <div className="grid grid-cols-1 gap-3.5">
-              {instructors.map((inst) => (
-                <button
-                  key={inst.id}
-                  type="button"
-                  disabled={isPending}
-                  onClick={() => handleSelectInstructor(inst.id)}
-                  className="w-full text-left p-4 rounded-2xl bg-slate-800/50 hover:bg-slate-800/90 border border-slate-700/60 hover:border-indigo-500/50 transition-all flex items-center justify-between group disabled:opacity-50"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-11 h-11 rounded-xl bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center font-bold text-base">
-                      {inst.name.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-white text-base group-hover:text-indigo-300 transition">
-                          {inst.name}
-                        </span>
-                        {inst.role === 'ADMIN' && (
-                          <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-950/80 text-amber-300 border border-amber-800/60 flex items-center gap-1">
-                            <ShieldCheck className="w-3 h-3" /> Admin
+              {instructors.map((inst) => {
+                const isActive = currentInstructor?.id === inst.id;
+
+                return (
+                  <button
+                    key={inst.id}
+                    type="button"
+                    disabled={isPending}
+                    onClick={() => handleSelectInstructor(inst.id)}
+                    className={`w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between group disabled:opacity-50 ${
+                      isActive
+                        ? 'bg-indigo-950/30 border-indigo-500/60 shadow-lg shadow-indigo-950/40 ring-1 ring-indigo-500/40'
+                        : 'bg-slate-800/50 hover:bg-slate-800/90 border-slate-700/60 hover:border-indigo-500/50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      {inst.avatarUrl ? (
+                        <img
+                          src={inst.avatarUrl}
+                          alt={inst.name}
+                          className="w-14 h-14 rounded-2xl object-cover border-2 border-slate-700 group-hover:border-indigo-500 transition shadow shrink-0"
+                        />
+                      ) : (
+                        <div className="w-14 h-14 rounded-2xl bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center font-bold text-lg shrink-0">
+                          {inst.name.charAt(0)}
+                        </div>
+                      )}
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-bold text-white text-base group-hover:text-indigo-300 transition">
+                            {inst.name}
                           </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-slate-400 mt-0.5">{inst.email}</div>
-                      <div className="text-[11px] text-slate-500 mt-1 flex gap-2">
-                        {inst.courses.map((c) => (
-                          <span key={c.id} className="bg-slate-900/80 px-2 py-0.5 rounded border border-slate-800">
-                            {c.code}
-                          </span>
-                        ))}
+                          {inst.role === 'ADMIN' ? (
+                            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-950/80 text-amber-300 border border-amber-800/60 flex items-center gap-1">
+                              <ShieldCheck className="w-3 h-3" /> Admin Persona
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-indigo-950/80 text-indigo-300 border border-indigo-800/60 flex items-center gap-1">
+                              <UserCheck className="w-3 h-3" /> Instructor Persona
+                            </span>
+                          )}
+                          {isActive && (
+                            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3" /> Active
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs text-slate-400 mt-0.5">{inst.email}</div>
+                        <div className="text-[11px] text-slate-400 mt-1">
+                          {inst.role === 'ADMIN' ? (
+                            <span className="text-amber-300/80 font-medium">
+                              Full privileges: Course catalog, Student registration, Faculty directory, & Grading
+                            </span>
+                          ) : (
+                            <span className="text-indigo-300/80 font-medium">
+                              Educator autonomy: Deliverables, Attendance, Grade matrix, & Student enrollment
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[11px] text-slate-500 mt-1.5 flex gap-2">
+                          <span className="text-slate-400 text-[10px] self-center">Teaching:</span>
+                          {inst.courses.map((c) => (
+                            <span key={c.id} className="bg-slate-900/80 px-2 py-0.5 rounded border border-slate-800 text-[10px]">
+                              {c.code}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="p-2 rounded-xl bg-slate-900/60 text-slate-400 group-hover:text-indigo-400 group-hover:bg-indigo-600/20 transition">
-                    <ArrowRight className="w-5 h-5" />
-                  </div>
-                </button>
-              ))}
+                    <div className="p-2.5 rounded-xl bg-slate-900/60 text-slate-400 group-hover:text-indigo-400 group-hover:bg-indigo-600/20 transition shrink-0 ml-3">
+                      <ArrowRight className="w-5 h-5" />
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

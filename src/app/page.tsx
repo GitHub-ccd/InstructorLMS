@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { getActiveInstructor } from '@/lib/auth/server';
 import AddCourseButton from '@/components/AddCourseButton';
@@ -18,6 +19,9 @@ export const revalidate = 0; // Dynamic server rendering
 
 export default async function DashboardPage() {
   const activeInstructor = await getActiveInstructor();
+  if (!activeInstructor) {
+    redirect('/signin');
+  }
 
   // All institutional catalog courses (distinct by course code)
   const catalogCourses = await prisma.course.findMany({

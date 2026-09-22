@@ -198,11 +198,15 @@ src/
 
 ---
 
-### J. Profile Switcher & Persona Authentication (`/signin` - [`src/app/signin/page.tsx`](file:///e:/My_GitHub__projects/InstructorLMS/src/app/signin/page.tsx))
-- **Active Persona Cards**: Quick single-click switching between test profiles:
-  - **Dr. Indika Perera** (Institutional Admin persona with full catalog and student creation privileges).
-  - **Prof. Sarah Connor** (Standard Instructor persona with autonomous course deliverable control and student enrollment privileges).
-- **Neon Auth Magic Link**: Native passwordless magic link email authentication powered by Neon Auth.
+### J. Strict Persona Gate & Authentication Portal (`/signin` - [`src/app/signin/page.tsx`](file:///e:/My_GitHub__projects/InstructorLMS/src/app/signin/page.tsx))
+- **Next.js Middleware Gate ([`src/middleware.ts`](file:///e:/My_GitHub__projects/InstructorLMS/src/middleware.ts))**: Automatically intercepts all route visits. Unauthenticated users are redirected to `/signin`.
+- **Zero Ambient Bleed**: Removed ambient default fallbacks so testing accurately reflects the chosen persona's boundaries.
+- **Visual Persona Selection**:
+  - **Dr. Indika Perera** *(Institutional Admin — Full access to catalog, student registration, faculty directory, and grading)*.
+  - **Prof. Sarah Connor** *(Standard Instructor — Autonomous course schedule, assessments, attendance, and student enrollment)*.
+- **Active Session Quick Return**: Displays an active status banner if already authenticated, with 1-click **"Enter Dashboard"** shortcut.
+- **Sidebar Sign Out Action**: Adds a dedicated **"Sign Out"** button to both desktop and mobile sidebars to clear sessions and return to the portal.
+- **Neon Auth Magic Link**: Native passwordless magic link email authentication backed by Neon Auth.
 
 ---
 

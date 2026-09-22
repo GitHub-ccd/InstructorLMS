@@ -266,10 +266,27 @@ timeline
 
 ---
 
+## 📅 Milestone 9: Strict Persona Authentication Gate & Session Boundaries
+
+### Tasks Completed:
+1. **Next.js Middleware Gate (`src/middleware.ts`)**:
+   - Implemented route interceptor protecting all application routes (`/`, `/attendance`, `/homework`, `/students`, `/workload`, `/announcements`, `/admin`, `/instructors/*`).
+   - Requests without an active instructor session are automatically redirected to `/signin`.
+2. **Eliminated Ambient Auto-Fallback**:
+   - Updated `getActiveInstructor()` in `src/lib/auth/server.ts` to return `null` instead of defaulting to the first database record.
+   - Added explicit unauthenticated redirect guard in `src/app/page.tsx`.
+3. **Dedicated Sign Out Action**:
+   - Added interactive **"Sign Out"** buttons to both Desktop and Mobile sidebar footers (`Sidebar.tsx`) that invoke `signOutInstructor()`, clear the session cookie, and redirect to the portal.
+4. **Enhanced Persona Selection UI (`SignInClient.tsx`)**:
+   - Added active session banner with 1-click **"Enter Dashboard"** shortcut when a session is already present.
+   - Upgraded instructor cards with circular avatars, admin/instructor badges, explicit role permission descriptions, and active status indicators.
+
+---
+
 ## 📊 Summary Status
 
-- **Phase**: Phase 4 Administrator Persona & Profile Customization Complete 🚀
+- **Phase**: Phase 4 Strict Persona Gate & Access Control Enforced 🚀
 - **Hosting**: Vercel (Hobby Tier - $0/mo)
 - **Database**: Neon Serverless PostgreSQL (`small-surf-10638308` - $0/mo)
-- **Auth**: Neon Auth (Managed Better Auth) + Session Switching
+- **Auth**: Neon Auth (Managed Better Auth) + Strict Persona Gate + Session Switching
 - **Build Verification**: Clean Next.js 14 production build (`npm run build` exited with code 0)

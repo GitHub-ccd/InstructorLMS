@@ -43,13 +43,8 @@ export async function getActiveInstructor() {
       if (instructor) return instructor;
     }
 
-    // Default fallback to first instructor
-    const firstInstructor = await prisma.instructor.findFirst({
-      include: { courses: true },
-      orderBy: { createdAt: 'asc' },
-    });
-
-    return firstInstructor;
+    // Strict persona gate: return null if not authenticated
+    return null;
   } catch (err) {
     console.error('Error fetching active instructor:', err);
     return null;
